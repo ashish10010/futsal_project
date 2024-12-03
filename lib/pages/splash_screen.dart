@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,23 +15,25 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
+    super.initState();
+
     Timer(
-      const Duration(
-        seconds: 3,
-      ),
+      const Duration(seconds: 3), // Wait for 3 seconds before checking user status
       () {
         User? user = FirebaseAuth.instance.currentUser;
         if (user == null) {
-          Navigator.pushNamed(context, '/loginpage');
+          // Navigate to login page if no user is logged in
+          Navigator.pushReplacementNamed(context, '/login');
         } else {
+          // Print user email for debugging (optional)
           print(user.email);
+
+          // Fetch current user details and navigate to home page
           context.read<AuthCubit>().getCurrentUser(user.uid);
-          Navigator.pushNamedAndRemoveUntil(
-              context, '/homepage', (route) => false);
+          Navigator.pushReplacementNamed(context, '/home'); // Use pushReplacementNamed to avoid splash screen in back stack
         }
       },
     );
-    super.initState();
   }
 
   @override
@@ -41,14 +42,15 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        color: Pallete.backgroundColor,
-        child: Container(
-          width: 206,
-          height: 206,
-          margin: const EdgeInsets.all(84),
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/logo.png"),
+        color: Pallete.backgroundColor, // Background color for splash screen
+        child: Center(
+          child: Container(
+            width: 206,
+            height: 206,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/logo.png"), // Your logo image
+              ),
             ),
           ),
         ),

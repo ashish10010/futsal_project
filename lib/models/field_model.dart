@@ -1,45 +1,49 @@
 import 'package:equatable/equatable.dart';
 
 class FieldModel extends Equatable {
-  final String id;
-  final String? name;
-  final String? fieldType;
-  final String? imageUrl;
-  final String? description;
-  final double? rating;
-  final double? price;
+  final String id; // Firestore's auto-generated document ID
+  final String name; 
+  final String fieldType; 
+  final String imageUrl;
+  final String description; 
+  final double ratings; 
+  final double price; 
+  final String location; 
 
- const FieldModel(
-      {required this.id,
-      this.name = '',
-      this.fieldType = '',
-      this.imageUrl = '',
-      this.description = '',
-      this.rating = 0.0,
-      this.price = 0.0});
+ const FieldModel({
+    required this.id,
+    this.name = '', 
+    this.fieldType = '', 
+    this.imageUrl = '',
+    this.description = '', 
+    this.ratings = 0.0, 
+    this.price = 0, 
+    this.location = '', 
+  });
 
-  factory FieldModel.fromJson(String id, Map<String, dynamic> json) =>
-      FieldModel(
+  // Factory constructor to create a model from Firestore data
+  factory FieldModel.fromJson(String id, Map<String, dynamic> json) => FieldModel(
         id: id,
-        name: json['name'],
-        imageUrl: json['imageUrl'],
-        fieldType: json['fieldType'],
-        description: json['description'],
-        rating: json['rating'],
-        price: json['price'],
+        name: json['name'] ?? '',
+        fieldType: json['fieldType'] ?? '',
+        imageUrl: json['imageUrl'] ?? '',
+        description: json['description'] ?? '',
+        ratings: (json['ratings'] ?? 0).toDouble(),
+        price: (json['price'] ?? 0).toDouble(),
+        location: json['location'] ?? '',
       );
 
+  // Convert the model into a Firestore-compatible map
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name' : name,
-    'imageUrl' : imageUrl,
-    'fieldType': fieldType,
-    'description': description,
-    'rating' : rating,
-    'price' : price,
-  };
+        'name': name,
+        'fieldType': fieldType,
+        'imageUrl': imageUrl,
+        'description': description,
+        'ratings': ratings,
+        'price': price,
+        'location': location,
+      };
 
   @override
-    List<Object?> get props => [id, name, imageUrl,fieldType,rating,price];
-  
+  List<Object?> get props => [id, name, fieldType, imageUrl, description, ratings, price, location];
 }
