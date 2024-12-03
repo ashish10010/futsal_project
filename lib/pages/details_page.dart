@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:futsal_booking_app/widgets/container_gallery.dart';
 import 'package:intl/intl.dart';
-
 import '../constants.dart';
 import '../widgets/container_icon.dart';
 import '../widgets/description_text.dart';
