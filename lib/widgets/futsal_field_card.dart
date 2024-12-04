@@ -4,6 +4,7 @@ class FutsalFieldCard extends StatelessWidget {
   final String name;
   final double price;
   final String location;
+  final String fieldType;
   final String imageUrl;
   final double? ratings;
 
@@ -13,7 +14,8 @@ class FutsalFieldCard extends StatelessWidget {
     required this.price,
     required this.location,
     required this.imageUrl,
-    this.ratings = 0.0,
+    this.ratings = 0.0, 
+    required this.fieldType,
   });
 
   @override
