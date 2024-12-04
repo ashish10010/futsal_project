@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:futsal_booking_app/pages/details_page.dart';
 
 class FutsalFieldCard extends StatelessWidget {
   final String name;
   final double price;
   final String location;
   final String imageUrl;
-  final String fieldType;
   final double? ratings;
 
   const FutsalFieldCard({
@@ -15,8 +13,7 @@ class FutsalFieldCard extends StatelessWidget {
     required this.price,
     required this.location,
     required this.imageUrl,
-    this.ratings = 0.0, 
-    required this.fieldType,
+    this.ratings = 0.0,
   });
 
   @override
@@ -27,17 +24,9 @@ class FutsalFieldCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) => DetailsPage(
-              name: name,
-              price: price,
-              location: location,
-              imageUrl: imageUrl,
-              ratings: ratings,
-            ),
-          ),
+          '/details',
         );
       },
       child: Card(
