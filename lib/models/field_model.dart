@@ -2,23 +2,25 @@ import 'package:equatable/equatable.dart';
 
 class FieldModel extends Equatable {
   final String id; // Firestore's auto-generated document ID
-  final String name; 
-  final String fieldType; 
-  final String imageUrl;
-  final String description; 
-  final double ratings; 
-  final double price; 
-  final String location; 
+  final String name;
+  final String fieldType;
+  final String cardImageUrl;  // Updated for card image URL
+  final List<String> detailImageUrl;  // Updated for detail image URLs
+  final String description;
+  final double ratings;
+  final double price;
+  final String location;
 
- const FieldModel({
+  const FieldModel({
     required this.id,
-    this.name = '', 
-    this.fieldType = '', 
-    this.imageUrl = '',
-    this.description = '', 
-    this.ratings = 0.0, 
-    this.price = 0, 
-    this.location = '', 
+    this.name = '',
+    this.fieldType = '',
+    this.cardImageUrl = '',
+    this.detailImageUrl = const [],
+    this.description = '',
+    this.ratings = 0.0,
+    this.price = 0,
+    this.location = '',
   });
 
   // Factory constructor to create a model from Firestore data
@@ -26,7 +28,8 @@ class FieldModel extends Equatable {
         id: id,
         name: json['name'] ?? '',
         fieldType: json['fieldType'] ?? '',
-        imageUrl: json['imageUrl'] ?? '',
+        cardImageUrl: json['cardImageUrl'] ?? '',  // Adjusted field
+        detailImageUrl: List<String>.from(json['detailImageUrl'] ?? []),  // Adjusted for list of URLs
         description: json['description'] ?? '',
         ratings: (json['ratings'] ?? 0).toDouble(),
         price: (json['price'] ?? 0).toDouble(),
@@ -37,7 +40,8 @@ class FieldModel extends Equatable {
   Map<String, dynamic> toJson() => {
         'name': name,
         'fieldType': fieldType,
-        'imageUrl': imageUrl,
+        'cardImageUrl': cardImageUrl,  // Adjusted field
+        'detailImageUrl': detailImageUrl,  // Adjusted for list of URLs
         'description': description,
         'ratings': ratings,
         'price': price,
@@ -45,5 +49,7 @@ class FieldModel extends Equatable {
       };
 
   @override
-  List<Object?> get props => [id, name, fieldType, imageUrl, description, ratings, price, location];
+  List<Object?> get props => [
+        id, name, fieldType, cardImageUrl, detailImageUrl, description, ratings, price, location
+      ];
 }

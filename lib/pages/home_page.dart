@@ -33,17 +33,19 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 12,
               ),
-             const Padding(
+              const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 26),
                 child: Text(
-                  "Explore Available Futsal Fields",  // Add your text here
+                  "Explore Available Futsal Fields", // Add your text here
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               BlocBuilder<FieldCubit, FieldState>(
                 builder: (context, state) {
                   if (state is FieldLoading) {
@@ -52,19 +54,16 @@ class _HomePageState extends State<HomePage> {
                     );
                   } else if (state is FieldSuccess) {
                     return ListView.builder(
-                        shrinkWrap: true,
-                        physics:const NeverScrollableScrollPhysics(),
-                        itemCount: state.fields.length,
-                        itemBuilder: (context, index) {
-                          final field = state.fields[index];
-                          return FutsalFieldCard(
-                            name: field.name,
-                            price: field.price,
-                            location: field.location,
-                            fieldType: field.fieldType,
-                            imageUrl: 'assets/images/image_gallery1.png',
-                          );
-                        });
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: state.fields.length,
+                      itemBuilder: (context, index) {
+                        final field = state.fields[index];
+                        return FutsalFieldCard(
+                          fields: field, // Pass the entire FieldModel object
+                        );
+                      },
+                    );
                   } else if (state is FieldFailure) {
                     return Center(
                       child: Text("Error: ${state.error}"),
