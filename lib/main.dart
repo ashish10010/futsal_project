@@ -87,7 +87,7 @@ class _QuickSalState extends State<QuickSal> {
             inputDecorationTheme: InputDecorationTheme(
               contentPadding: const EdgeInsets.all(27),
               enabledBorder: _border(Pallete.borderColor),
-              focusedBorder: _border(Pallete.borderColor),
+              focusedBorder: _border(Pallete.borderColor2),
             )),
         darkTheme: ThemeData(
           colorSchemeSeed: colorSelected.color,
@@ -96,7 +96,7 @@ class _QuickSalState extends State<QuickSal> {
           inputDecorationTheme: InputDecorationTheme(
             contentPadding: const EdgeInsets.all(27),
             enabledBorder: _border(Pallete.borderColor),
-            focusedBorder: _border(Pallete.borderColor),
+            focusedBorder: _border(Pallete.borderColor2),
           ),
         ),
         initialRoute: '/SplashScreen', // Define the initial route

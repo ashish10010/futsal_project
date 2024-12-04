@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:futsal_booking_app/cubit/field_cubit.dart';
-
 import '../widgets/futsal_field_card.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,7 +14,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    //fetch data when homepage is initialized,
+    // Fetch data when homepage is initialized
     context.read<FieldCubit>().fetchFields();
   }
 
@@ -28,24 +27,21 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _topBar(),
-              _searchSection(),
-              const SizedBox(
-                height: 12,
-              ),
+              _headerSection(),
+              const SizedBox(height: 20,),
+              _searchBar(), // Replaced topBar
+              const SizedBox(height: 20),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 26),
                 child: Text(
-                  "Explore Available Futsal Fields", // Add your text here
+                  "Explore Available Futsal Fields",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 10),
               BlocBuilder<FieldCubit, FieldState>(
                 builder: (context, state) {
                   if (state is FieldLoading) {
@@ -79,73 +75,39 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _topBar() {
+  Widget _headerSection() {
     return Container(
-      margin: const EdgeInsets.all(16),
-      width: double.infinity,
-      child: Row(
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            margin: const EdgeInsets.only(right: 8),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/image_profile.png"),
-              ),
-            ),
-          ),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Hello, User",
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 5),
-              Row(
-                children: [
-                  Icon(Icons.location_on, size: 15),
-                  SizedBox(width: 4),
-                  Text(
-                    "Pokhara-16",
-                    style: TextStyle(fontSize: 12),
-                  ),
-                ],
-              )
-            ],
-          ),
-          const Spacer(),
-          const Icon(Icons.notifications),
-        ],
+      height: 250,
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(
+              'assets/images/abc_futsal2.jpg'), // Replace with your hero image
+          fit: BoxFit.cover,
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
       ),
     );
   }
 
-  Widget _searchSection() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Where would you like\nto play futsal?",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-              )),
-          const SizedBox(
-            height: 20,
+  Widget _searchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: "Search futsal fields...",
+          hintStyle: TextStyle(color: Colors.grey[500]),
+          prefixIcon: const Icon(Icons.search, color: Colors.green),
+          // filled: true,
+          // fillColor: Colors.grey[100],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18),
+            borderSide: BorderSide.none,
           ),
-          TextField(
-            decoration: InputDecoration(
-              hintText: "Search futsal fields...",
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-        ],
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+        ),
       ),
     );
   }
