@@ -6,6 +6,7 @@ import 'package:futsal_booking_app/cubit/field_cubit.dart';
 import 'package:futsal_booking_app/cubit/navigation_cubit.dart';
 import 'package:futsal_booking_app/cubit/ratings_cubit.dart';
 import 'package:futsal_booking_app/firebase_options.dart';
+import 'package:futsal_booking_app/pages/details_page.dart';
 import 'package:futsal_booking_app/pages/main_page.dart';
 import 'package:futsal_booking_app/pages/login_page.dart';
 import 'package:futsal_booking_app/cubit/auth_cubit.dart';
@@ -109,7 +110,8 @@ class _QuickSalState extends State<QuickSal> {
                 changeTheme: changeThemeMode,
                 changeColor: changeColor,
                 colorSelected: colorSelected,
-              ),// MainScreenRoute
+              ),
+          '/details': (context) => const DetailsPage(),
         },
       ),
     );

@@ -1,15 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 class FieldModel extends Equatable {
-  final String id; // Firestore's auto-generated document ID
+  final String id; 
   final String name;
   final String fieldType;
-  final String cardImageUrl;  // Updated for card image URL
-  final List<String> detailImageUrl;  // Updated for detail image URLs
+  final String cardImageUrl;
+  final List<String> detailImageUrl;
   final String description;
   final double ratings;
   final double price;
   final String location;
+  final GeoPoint? coordinates;  // Add coordinates to the model
 
   const FieldModel({
     required this.id,
@@ -21,6 +23,7 @@ class FieldModel extends Equatable {
     this.ratings = 0.0,
     this.price = 0,
     this.location = '',
+    this.coordinates,  // Include coordinates in the constructor
   });
 
   // Factory constructor to create a model from Firestore data
@@ -28,28 +31,29 @@ class FieldModel extends Equatable {
         id: id,
         name: json['name'] ?? '',
         fieldType: json['fieldType'] ?? '',
-        cardImageUrl: json['cardImageUrl'] ?? '',  // Adjusted field
-        detailImageUrl: List<String>.from(json['detailImageUrl'] ?? []),  // Adjusted for list of URLs
+        cardImageUrl: json['cardImageUrl'] ?? '',
+        detailImageUrl: List<String>.from(json['detailImageUrl'] ?? []),
         description: json['description'] ?? '',
         ratings: (json['ratings'] ?? 0).toDouble(),
         price: (json['price'] ?? 0).toDouble(),
         location: json['location'] ?? '',
+        coordinates: json['coordinates'] is GeoPoint ? json['coordinates'] : null,  // Fetch coordinates (GeoPoint)
       );
 
-  // Convert the model into a Firestore-compatible map
   Map<String, dynamic> toJson() => {
         'name': name,
         'fieldType': fieldType,
-        'cardImageUrl': cardImageUrl,  // Adjusted field
-        'detailImageUrl': detailImageUrl,  // Adjusted for list of URLs
+        'cardImageUrl': cardImageUrl,
+        'detailImageUrl': detailImageUrl,
         'description': description,
         'ratings': ratings,
         'price': price,
         'location': location,
+        'coordinates': coordinates,  // Include coordinates in the map
       };
 
   @override
   List<Object?> get props => [
-        id, name, fieldType, cardImageUrl, detailImageUrl, description, ratings, price, location
+        id, name, fieldType, cardImageUrl, detailImageUrl, description, ratings, price, location, coordinates
       ];
 }

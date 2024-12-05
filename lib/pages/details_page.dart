@@ -1,243 +1,148 @@
 import 'package:flutter/material.dart';
-import 'package:futsal_booking_app/widgets/container_gallery.dart';
-import 'package:intl/intl.dart';
-import '../constants.dart';
-import '../widgets/container_icon.dart';
-import '../widgets/description_text.dart';
-import '../widgets/my_button.dart';
-import '../widgets/small_container.dart';
-import '../widgets/small_icon.dart';
-import 'booking_page.dart';
+import 'package:futsal_booking_app/pages/booking_page.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../models/field_model.dart';
 
 class DetailsPage extends StatelessWidget {
-  final String name;
-  final double price;
-  final String location;
-  final String imageUrl;
-  final double? ratings;
-
-  const DetailsPage({
-    super.key,
-    required this.name,
-    required this.price,
-    required this.location,
-    required this.imageUrl,
-    this.ratings,
-  });
+  const DetailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Retrieve the FieldModel from the arguments
+    final field = ModalRoute.of(context)!.settings.arguments as FieldModel;
+
     return Scaffold(
-      backgroundColor: kBackgroundColor,
-      body: SafeArea(
-        child: Stack(
+      appBar: AppBar(
+        title: Text(field.name), // Access the name directly from the FieldModel
+      ),
+      body: SingleChildScrollView(
+        child: Column(
           children: [
-            ListView(
-              children: [
-                imageSection(),
-                detailSection(),
-                galerySection(),
-                MyButton(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const BookingPage(),
-                      ),
-                    );
-                  },
-                  height: 45,
-                  width: double.infinity,
-                  margin: EdgeInsets.fromLTRB(
-                    defaultMargin,
-                    32,
-                    defaultMargin,
-                    defaultMargin,
-                  ),
-                  text: "Booking",
-                ),
-              ],
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: topBarSection(context),
-            )
+            _imageCarousel(field),
+            _fieldInformation(field),
+            _fieldMap(field),
+            _availabilityButton(context, field),
           ],
         ),
       ),
     );
   }
 
-  Widget topBarSection(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 24,
-      margin: const EdgeInsets.all(24.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: const ContainerIcon(
-              imageUrl: "assets/icon_arrow.png",
-              color: Colors.white,
-            ),
-          ),
-          const ContainerIcon(
-            imageUrl: "assets/icon_bookmark.png",
-            color: Colors.white,
-          ),
-        ],
+  Widget _imageCarousel(FieldModel field) {
+    return SizedBox(
+      height: 250,
+      child: ListView.builder(
+        itemCount: field.detailImageUrl.length,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            child: Image.asset(field.detailImageUrl[index], fit: BoxFit.cover),
+          );
+        },
       ),
     );
   }
 
-  Widget imageSection() {
-    return Container(
-      width: double.infinity,
-      height: 374,
-      decoration: BoxDecoration(
-        image: const DecorationImage(
-          image: AssetImage("assets/images/image_futsal3.png"),
-          fit: BoxFit.cover,
-        ),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, 4),
-            blurRadius: 10,
-            color: Colors.black.withOpacity(0.1),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget detailSection() {
-    return Container(
-      margin: const EdgeInsets.all(24.0),
+  Widget _fieldInformation(FieldModel field) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            field.name,
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Location: ${field.location}",
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Price: \$${field.price.toStringAsFixed(2)} per hour",
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(name,
-                      style: blackTextStyle.copyWith(
-                        fontSize: 18,
-                        fontWeight: semiBold,
-                      )),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const SmallIcon(imageUrl: "assets/icon_location.png"),
-                      const SizedBox(width: 3),
-                      Text(
-                        location,
-                        style: lightTextStyle.copyWith(
-                          fontSize: 10,
-                          fontWeight: light,
-                          color: const Color(0xFF424242),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  const SmallIcon(imageUrl: "assets/icon_star.png"),
-                  const SizedBox(width: 3),
-                  Text(
-                    ratings.toString(),
-                    style: blackTextStyle.copyWith(
-                      fontSize: 10,
-                      fontWeight: medium,
-                    ),
-                  ),
-                ],
+              const Icon(Icons.star, color: Colors.orange, size: 20),
+              const SizedBox(width: 4),
+              Text(
+                "${field.ratings} / 5.0",
+                style: const TextStyle(fontSize: 16),
               ),
             ],
-          ),
-          // details Section
-          Container(
-            width: double.infinity,
-            height: 53,
-            margin: EdgeInsets.only(top: defaultMargin),
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  offset: const Offset(0, 9),
-                  blurRadius: 30,
-                  color: Colors.black.withOpacity(0.1),
-                )
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const DescriptionText(
-                  title: "Field Type",
-                  value: "6A Side",
-                ),
-                DescriptionText(
-                  title: "Price/Hour",
-                  value: NumberFormat.currency(
-                    locale: 'id',
-                    symbol: 'Rs. ',
-                    decimalDigits: 0,
-                  ).format(
-                    price,
-                  ),
-                ),
-              ],
-            ),
           ),
         ],
       ),
     );
   }
 
-  Widget galerySection() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            SizedBox(width: defaultMargin),
-            const SmallContainer(
-              imageUrl: "assets/icon_image.png",
-              title: "Galeri",
-              isActive: true,
-            ),
-            const SmallContainer(
-              imageUrl: "assets/icon_chat.png",
-              title: "Ulasan",
-            ),
-          ],
+Widget _fieldMap(FieldModel field) {
+  return Container(
+    height: 250,
+    padding: const EdgeInsets.all(16.0),
+    child: GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: LatLng(
+          field.coordinates?.latitude ?? 0.0,  // Use null-coalescing operator for fallback
+          field.coordinates?.longitude ?? 0.0,  // Use null-coalescing operator for fallback
         ),
-        const SizedBox(height: 16),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              SizedBox(width: defaultMargin),
-              const ContainerGallery(imageUrl: "assets/image_futsal1.png"),
-              const ContainerGallery(imageUrl: "assets/image_gallery1.png"),
-              const ContainerGallery(imageUrl: "assets/image_gallery2.png"),
-            ],
+        zoom: 14,
+      ),
+      markers: {
+        Marker(
+          markerId: const MarkerId('futsalField'),
+          position: LatLng(
+            field.coordinates?.latitude ?? 0.0,  // Use null-coalescing operator for fallback
+            field.coordinates?.longitude ?? 0.0,  // Use null-coalescing operator for fallback
+          ),
+          infoWindow: InfoWindow(
+            title: field.name,
+            snippet: field.location,
           ),
         ),
-      ],
+      },
+    ),
+  );
+}
+
+  Widget _availabilityButton(BuildContext context, FieldModel field) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BookingPage(
+                  field: field), // Pass the FieldModel to the BookingPage
+            ),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.orange,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: const Text(
+          "Check Availability",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 }
