@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ThemeButton extends StatelessWidget {
-  final Function changeThemeMode;
+  final ValueChanged<bool> changeThemeMode;
   const ThemeButton({super.key, required this.changeThemeMode});
 
   @override
@@ -11,7 +11,6 @@ class ThemeButton extends StatelessWidget {
       icon: isBright
           ? const Icon(Icons.dark_mode_outlined)
           : const Icon(Icons.light_mode_outlined),
-          
       onPressed: () => changeThemeMode(!isBright),
     );
   }

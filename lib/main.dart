@@ -1,20 +1,19 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:futsal_booking_app/constants.dart';
+import 'package:futsal_booking_app/src/core/constants/constants.dart';
+import 'package:futsal_booking_app/cubit/booking_cubit.dart';
 import 'package:futsal_booking_app/cubit/field_cubit.dart';
 import 'package:futsal_booking_app/cubit/navigation_cubit.dart';
 import 'package:futsal_booking_app/cubit/ratings_cubit.dart';
-import 'package:futsal_booking_app/firebase_options.dart';
-import 'package:futsal_booking_app/pages/details_page.dart';
-import 'package:futsal_booking_app/pages/main_page.dart';
-import 'package:futsal_booking_app/pages/login_page.dart';
+import 'package:futsal_booking_app/src/core/constants/string.dart';
+import 'package:futsal_booking_app/src/core/routes/app_router.dart';
+import 'package:futsal_booking_app/src/core/services/firebase_options.dart';
 import 'package:futsal_booking_app/cubit/auth_cubit.dart';
-import 'package:futsal_booking_app/pages/splash_screen.dart';
 import 'package:futsal_booking_app/service/auth_service.dart';
+import 'package:futsal_booking_app/service/booking_service.dart';
 import 'package:futsal_booking_app/service/field_service.dart';
 import 'package:futsal_booking_app/service/user_service.dart';
-import 'pages/sign_up_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,33 +29,8 @@ class QuickSal extends StatefulWidget {
 }
 
 class _QuickSalState extends State<QuickSal> {
-  ThemeMode themeMode = ThemeMode.light;
-  ColorSelection colorSelected = ColorSelection.pink;
-
-  static OutlineInputBorder _border(Color color) => OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
-        borderSide: BorderSide(
-          color: color,
-          width: 3,
-        ),
-      );
-
-  void changeThemeMode(bool useLightMode) {
-    setState(() {
-      themeMode = useLightMode ? ThemeMode.light : ThemeMode.dark;
-    });
-  }
-
-  void changeColor(int value) {
-    setState(() {
-      colorSelected = ColorSelection.values[value];
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    const appTitle = 'QuickSal';
-
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -76,43 +50,66 @@ class _QuickSalState extends State<QuickSal> {
         BlocProvider(
           create: (_) => RatingCubit(),
         ),
-      ],
-      child: MaterialApp(
-        title: appTitle,
-        debugShowCheckedModeBanner: false, // Hides the debug banner
-        themeMode: themeMode,
-        theme: ThemeData(
-            colorSchemeSeed: colorSelected.color,
-            useMaterial3: true,
-            brightness: Brightness.light,
-            inputDecorationTheme: InputDecorationTheme(
-              contentPadding: const EdgeInsets.all(27),
-              enabledBorder: _border(Pallete.borderColor),
-              focusedBorder: _border(Pallete.borderColor2),
-            )),
-        darkTheme: ThemeData(
-          colorSchemeSeed: colorSelected.color,
-          useMaterial3: true,
-          brightness: Brightness.dark,
-          inputDecorationTheme: InputDecorationTheme(
-            contentPadding: const EdgeInsets.all(27),
-            enabledBorder: _border(Pallete.borderColor),
-            focusedBorder: _border(Pallete.borderColor2),
+        BlocProvider(
+          create: (_) => BookingCubit(
+            BookingService(),
           ),
         ),
-        initialRoute: '/SplashScreen', // Define the initial route
-        routes: {
-          '/SplashScreen': (context) => const SplashScreen(),
-          '/login': (context) => const LoginPage(), // Login Page Route
-          '/signup': (context) => const SignUpPage(), // Sign-Up Page Route
-          '/home': (context) => MainPage(
-                appTitle: appTitle,
-                changeTheme: changeThemeMode,
-                changeColor: changeColor,
-                colorSelected: colorSelected,
+      ],
+      child: MaterialApp(
+        title: AppString.title,
+        debugShowCheckedModeBanner: false, // Hides the debug banner
+        theme: ThemeData(
+          scaffoldBackgroundColor: Palette.backgroundColor,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Palette.primaryGreen,
+            foregroundColor: Palette.white,
+            elevation: 0,
+          ),
+          colorScheme: const ColorScheme.light(
+            primary: Palette.primaryGreen,
+            secondary: Palette.darkGreen,
+            error: Palette.error,
+            surface: Palette.backgroundColor,
+            onSurface: Palette.grey,
+          ),
+         textTheme: TextTheme(
+            displayLarge: headlineTextStyle,
+            bodyLarge: bodyTextStyle,
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Palette.primaryGreen,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-          '/details': (context) => const DetailsPage(),
-        },
+              textStyle: whiteTextStyle,
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            contentPadding: const EdgeInsets.all(27),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Palette.darkGreen),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Palette.primaryGreen, width: 2),
+            ),
+          ),
+        ),
+        darkTheme: ThemeData(
+          scaffoldBackgroundColor: Palette.backgroundColor,
+          colorScheme: const ColorScheme.dark(
+            primary: Palette.primaryGreen,
+            secondary: Palette.darkGreen,
+            error: Palette.error,
+            surface: Palette.backgroundColor,
+            onSurface: Palette.white,
+          ),
+        ),
+        initialRoute: '/',
+        onGenerateRoute: AppRouter.route,
       ),
     );
   }

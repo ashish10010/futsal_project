@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../models/user_models.dart';
+import '../src/features/auth/data/model/user_model.dart';
 import '../service/auth_service.dart';
 import '../service/user_service.dart';
 
@@ -12,10 +12,11 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit(this._authService, this._userService) : super(AuthInitial());
 
-  /// Sign in a user
+  /// Sign in a user via API
   void signIn({required String email, required String password}) async {
     try {
       emit(AuthLoading());
+      // Replace Firebase logic with API call in AuthService
       UserModel user =
           await _authService.signIn(email: email, password: password);
       emit(AuthSuccess(user));
@@ -24,7 +25,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  /// Sign up a user
+  /// Sign up a user via API
   void signUp({
     required String name,
     required String email,
@@ -32,6 +33,7 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     try {
       emit(AuthLoading());
+      // Replace Firebase logic with API call in AuthService
       UserModel user = await _authService.signUp(
         name: name,
         email: email,
@@ -47,6 +49,7 @@ class AuthCubit extends Cubit<AuthState> {
   void signOut() async {
     try {
       emit(AuthLoading());
+      // Replace Firebase sign-out logic with API-based token invalidation
       await _authService.signOut();
       emit(AuthInitial());
     } catch (e) {
@@ -54,8 +57,10 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  /// Get current user details
   void getCurrentUser(String id) async {
     try {
+      // Replace Firebase user fetch with API-based logic
       UserModel user = await _userService.getUserById(id);
       emit(AuthSuccess(user));
     } catch (e) {

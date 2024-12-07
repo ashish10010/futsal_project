@@ -1,16 +1,15 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:futsal_booking_app/pages/booking_page.dart';
+import 'package:futsal_booking_app/models/field_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../models/field_model.dart';
 
-class DetailsPage extends StatelessWidget {
-  const DetailsPage({super.key});
+class DetailPage extends StatelessWidget {
+  final FieldModel field;
+
+  const DetailPage({super.key, required this.field});
 
   @override
   Widget build(BuildContext context) {
-    // Retrieve the FieldModel from the arguments
-    final field = ModalRoute.of(context)!.settings.arguments as FieldModel;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(field.name), // Access the name directly from the FieldModel
@@ -29,17 +28,44 @@ class DetailsPage extends StatelessWidget {
   }
 
   Widget _imageCarousel(FieldModel field) {
-    return SizedBox(
-      height: 250,
-      child: ListView.builder(
-        itemCount: field.detailImageUrl.length,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) {
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            child: Image.asset(field.detailImageUrl[index], fit: BoxFit.cover),
-          );
-        },
+    return CarouselSlider.builder(
+      itemCount: field.detailImageUrl.length,
+      itemBuilder: (context, index, realIndex) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 5),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.network(
+              field.detailImageUrl[index],
+              fit: BoxFit.cover,
+              width: double.infinity,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            (loadingProgress.expectedTotalBytes ?? 1)
+                        : null,
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(
+                  child: Icon(Icons.error, color: Colors.red),
+                );
+              },
+            ),
+          ),
+        );
+      },
+      options: CarouselOptions(
+        height: 250,
+        autoPlay: true,
+        autoPlayInterval: const Duration(seconds: 3),
+        enlargeCenterPage: true,
+        aspectRatio: 16 / 9,
+        viewportFraction: 0.8,
       ),
     );
   }
@@ -89,47 +115,41 @@ class DetailsPage extends StatelessWidget {
     );
   }
 
-Widget _fieldMap(FieldModel field) {
-  return Container(
-    height: 250,
-    padding: const EdgeInsets.all(16.0),
-    child: GoogleMap(
-      initialCameraPosition: CameraPosition(
-        target: LatLng(
-          field.coordinates?.latitude ?? 0.0,  // Use null-coalescing operator for fallback
-          field.coordinates?.longitude ?? 0.0,  // Use null-coalescing operator for fallback
+  Widget _fieldMap(FieldModel field) {
+    return Container(
+      height: 250,
+      padding: const EdgeInsets.all(16.0),
+      child: GoogleMap(
+        initialCameraPosition: CameraPosition(
+          target: LatLng(
+            field.coordinates?.latitude ?? 0.0,
+            field.coordinates?.longitude ?? 0.0,
+          ),
+          zoom: 14,
         ),
-        zoom: 14,
+        markers: {
+          Marker(
+            markerId: const MarkerId('futsalField'),
+            position: LatLng(
+              field.coordinates?.latitude ?? 0.0,
+              field.coordinates?.longitude ?? 0.0,
+            ),
+            infoWindow: InfoWindow(
+              title: field.name,
+              snippet: field.location,
+            ),
+          ),
+        },
       ),
-      markers: {
-        Marker(
-          markerId: const MarkerId('futsalField'),
-          position: LatLng(
-            field.coordinates?.latitude ?? 0.0,  // Use null-coalescing operator for fallback
-            field.coordinates?.longitude ?? 0.0,  // Use null-coalescing operator for fallback
-          ),
-          infoWindow: InfoWindow(
-            title: field.name,
-            snippet: field.location,
-          ),
-        ),
-      },
-    ),
-  );
-}
+    );
+  }
 
   Widget _availabilityButton(BuildContext context, FieldModel field) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ElevatedButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BookingPage(
-                  field: field), // Pass the FieldModel to the BookingPage
-            ),
-          );
+          Navigator.pushNamed(context, '/booking', arguments: field);
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.orange,

@@ -1,24 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:futsal_booking_app/constants.dart';
-import 'package:futsal_booking_app/pages/home_page.dart';
-import 'package:futsal_booking_app/widgets/color_button.dart';
-import 'package:futsal_booking_app/widgets/theme_button.dart';
-
-import '../cubit/navigation_cubit.dart';
+import 'package:futsal_booking_app/src/core/constants/string.dart';
+import 'package:futsal_booking_app/src/core/theme/theme.dart';
+import 'package:futsal_booking_app/src/features/booking/presentation/booking_page.dart';
+import 'package:futsal_booking_app/src/features/futsal/presentation/home_page.dart';
+import 'package:futsal_booking_app/src/core/widgets/theme_button.dart';
+import '../../../../cubit/navigation_cubit.dart';
 
 class MainPage extends StatefulWidget {
-  final void Function(bool useLightMode) changeTheme;
-  final void Function(int value) changeColor;
-  final ColorSelection colorSelected;
-  final String appTitle;
-
   const MainPage({
     super.key,
-    required this.changeTheme,
-    required this.changeColor,
-    required this.colorSelected,
-    required this.appTitle,
   });
 
   @override
@@ -27,6 +18,12 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int tab = 0;
+
+  void changeThemeMode(bool useLightMode) {
+    setState(() {
+      themeMode = useLightMode ? ThemeMode.light : ThemeMode.dark;
+    });
+  }
 
   // tab bar destinations
   List<NavigationDestination> appBarDestinations = const [
@@ -42,7 +39,7 @@ class _MainPageState extends State<MainPage> {
     ),
     NavigationDestination(
       icon: Icon(Icons.person_2_outlined),
-      label: 'Settings',
+      label: 'Account',
       selectedIcon: Icon(Icons.person),
     ),
   ];
@@ -55,9 +52,7 @@ class _MainPageState extends State<MainPage> {
       const HomePage(),
 
       //booking page
-      Container(
-        color: Colors.blue,
-      ),
+      const BookingPage(),
 
       //Account page
       Container(
@@ -66,16 +61,12 @@ class _MainPageState extends State<MainPage> {
     ];
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.appTitle),
+        title: Text(AppString.title),
         elevation: 4.0,
         backgroundColor: Theme.of(context).colorScheme.surface,
         actions: [
           ThemeButton(
-            changeThemeMode: widget.changeTheme,
-          ),
-          ColorButton(
-            changeColor: widget.changeColor,
-            colorSelected: widget.colorSelected,
+            changeThemeMode: changeThemeMode,
           ),
         ],
       ),

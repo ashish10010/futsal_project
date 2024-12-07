@@ -15,7 +15,7 @@ class UserModel extends Equatable {
     this.photo,
   });
 
-  /// Convert UserModel to Map for Firestore
+  /// Convert UserModel to Map for API requests
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -25,10 +25,10 @@ class UserModel extends Equatable {
     };
   }
 
-  /// Create UserModel from Firestore Document
+  /// Create UserModel from API JSON response
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      id: map['id'] ?? '',
+      id: map['id'] ?? '', // Adjust to match the API's key for user ID
       name: map['name'],
       email: map['email'],
       photo: map['photo'],

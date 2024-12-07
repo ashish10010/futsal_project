@@ -1,58 +1,122 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import '../models/user_models.dart';
-import '../service/user_service.dart';
+
+import '../src/features/auth/data/model/user_model.dart';
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  /// Sign in with email and password
+  /// Mocked Sign In Response
   Future<UserModel> signIn({
     required String email,
     required String password,
   }) async {
-    try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      UserModel user =
-          await UserService().getUserById(userCredential.user!.uid);
-      return user;
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.message);
-    }
+    // Simulate a delay
+    await Future.delayed(const Duration(seconds: 2));
+    return UserModel(
+      id: '1',
+      name: 'Mock User',
+      email: email,
+      photo: null,
+    );
   }
 
-  /// Sign up a new user
+  /// Mocked Sign Up Response
   Future<UserModel> signUp({
     required String name,
     required String email,
     required String password,
   }) async {
-    try {
-      //create the user using firebase auth
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      //Usermodel object to represent new user
-      UserModel user = UserModel(
-        id: userCredential.user!.uid,
-        name: name,
-        email: email,
-      );
-      //save the user's data in firestore(users collection)
-      await UserService().setUser(user);
-      return user;
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.message);
-    }
+    // Simulate a delay
+    await Future.delayed(const Duration(seconds: 2));
+    return UserModel(
+      id: '1',
+      name: name,
+      email: email,
+      photo: null,
+    );
   }
 
-  //Signout the current User
+  /// Mocked Sign Out
   Future<void> signOut() async {
-    await _auth.signOut();
+    await Future.delayed(const Duration(seconds: 1));
   }
 }
+
+
+
+
+
+
+// import 'dart:convert';
+// import 'package:http/http.dart' as http;
+// import '../src/features/auth/data/model/user_model.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// class AuthService {
+//   final String baseUrl = 'https://your-backend-api.com'; // Replace with your API base URL
+
+//   /// Sign in with email and password
+//   Future<UserModel> signIn({
+//     required String email,
+//     required String password,
+//   }) async {
+//     final url = Uri.parse('$baseUrl/auth/login');
+//     final response = await http.post(
+//       url,
+//       body: json.encode({'email': email, 'password': password}),
+//       headers: {'Content-Type': 'application/json'},
+//     );
+
+//     if (response.statusCode == 200) {
+//       final data = json.decode(response.body);
+//       final prefs = await SharedPreferences.getInstance();
+//       await prefs.setString('token', data['token']); // Save JWT token
+//       return UserModel.fromMap(data['user']);
+//     } else {
+//       throw Exception('Failed to log in: ${response.body}');
+//     }
+//   }
+
+//   /// Sign up a new user
+//   Future<UserModel> signUp({
+//     required String name,
+//     required String email,
+//     required String password,
+//   }) async {
+//     final url = Uri.parse('$baseUrl/auth/signup');
+//     final response = await http.post(
+//       url,
+//       body: json.encode({
+//         'name': name,
+//         'email': email,
+//         'password': password,
+//       }),
+//       headers: {'Content-Type': 'application/json'},
+//     );
+
+//     if (response.statusCode == 201) {
+//       final data = json.decode(response.body);
+//       return UserModel.fromMap(data['user']);
+//     } else {
+//       throw Exception('Failed to sign up: ${response.body}');
+//     }
+//   }
+
+//   /// Sign out the current user
+//   Future<void> signOut() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     await prefs.remove('token'); // Clear the stored token
+//   }
+
+//   Future<bool> isTokenValid() async {
+//   final prefs = await SharedPreferences.getInstance();
+//   final token = prefs.getString('token');
+//   if (token == null) return false;
+
+//   final url = Uri.parse('$baseUrl/auth/validate');
+//   final response = await http.post(
+//     url,
+//     headers: {'Authorization': 'Bearer $token'},
+//   );
+
+//   return response.statusCode == 200;
+// }
+
+// }

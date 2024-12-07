@@ -1,10 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../constants.dart';
-import '../cubit/auth_cubit.dart';
-import '../widgets/gradient_button.dart';
-import '../widgets/custom_textfield.dart';
+import '../../../../../core/widgets/gradient_button.dart';
+import '../../../../../core/widgets/custom_textfield.dart';
+import '../../../../../../cubit/auth_cubit.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,7 +27,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Login'),
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -37,10 +39,11 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Sign In.',
+                'Sign In',
                 style: TextStyle(
-                  fontSize: 50,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
+                  color: Colors.green,
                 ),
               ),
               const SizedBox(height: 30),
@@ -73,48 +76,55 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               const SizedBox(height: 24),
-              AuthGradientButton(
-                buttonText: 'Log In',
-                onTap: () {
-                  if (_formKey.currentState!.validate()) {
-                    context.read<AuthCubit>().signIn(
-                          email: emailController.text.trim(),
-                          password: passwordController.text.trim(),
-                        );
-                    context.read<AuthCubit>().stream.listen((state) {
-                      if (state is AuthSuccess) {
-                        // Navigate to Home Page after successful login
-                        Navigator.pushReplacementNamed(context, '/home');
-                      } else if (state is AuthFailed) {
-                        // Show error message if login fails
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(state.toString())),
-                        );
-                      }
-                    });
-                  } else {
+              BlocConsumer<AuthCubit, AuthState>(
+                listener: (context, state) {
+                  if (state is AuthSuccess) {
+                    // Navigate to Home Page after successful login
+                    Navigator.pushReplacementNamed(context, '/home');
+                  } else if (state is AuthFailed) {
+                    // Show error message if login fails
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please fix the errors')),
+                      SnackBar(content: Text(state.message)),
                     );
                   }
+                },
+                builder: (context, state) {
+                  if (state is AuthLoading) {
+                    return const CircularProgressIndicator();
+                  }
+                  return AuthGradientButton(
+                    buttonText: 'Log In',
+                    onTap: () {
+                      if (_formKey.currentState!.validate()) {
+                        context.read<AuthCubit>().signIn(
+                              email: emailController.text.trim(),
+                              password: passwordController.text.trim(),
+                            );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please fix the errors')),
+                        );
+                      }
+                    },
+                  );
                 },
               ),
               const SizedBox(height: 16),
               RichText(
                 text: TextSpan(
-                  text: "Don't have an accout?",
-                  style: Theme.of(context).textTheme.titleMedium,
-                  children:  [
+                  text: "Don't have an account? ",
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  children: [
                     TextSpan(
                       text: 'Sign Up.',
                       style: const TextStyle(
-                        color: Pallete.gradient2,
+                        color: Colors.green,
                         fontWeight: FontWeight.bold,
                       ),
                       recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        Navigator.pushNamed(context, '/signup');
-                      }
+                        ..onTap = () {
+                          Navigator.pushNamed(context, '/signup');
+                        },
                     ),
                   ],
                 ),

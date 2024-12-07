@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubit/auth_cubit.dart';
-import '../widgets/gradient_button.dart';
-import '../widgets/custom_textfield.dart';
+import '../../../../../../cubit/auth_cubit.dart';
+import '../../../../../core/widgets/gradient_button.dart';
+import '../../../../../core/widgets/custom_textfield.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -28,7 +28,10 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Sign Up'),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -38,13 +41,14 @@ class _SignUpPageState extends State<SignUpPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'Sign Up',
+                  'Create Account',
                   style: TextStyle(
-                    fontSize: 50,
+                    fontSize: 36,
                     fontWeight: FontWeight.bold,
+                    color: Colors.green,
                   ),
                 ),
-                const SizedBox(height: 30,),
+                const SizedBox(height: 30),
                 CustomTextField(
                   controller: nameController,
                   hintText: 'Name',
@@ -86,32 +90,40 @@ class _SignUpPageState extends State<SignUpPage> {
                   },
                 ),
                 const SizedBox(height: 24),
-                AuthGradientButton(
-                  buttonText: 'Sign Up',
-                  onTap: () {
-                    if (_formKey.currentState!.validate()) {
-                      context.read<AuthCubit>().signUp(
-                            name: nameController.text.trim(),
-                            email: emailController.text.trim(),
-                            password: passwordController.text.trim(),
-                          );
-                      //listen for state change and navigate if succesful
-                      context.read<AuthCubit>().stream.listen((state) {
-                        if (state is AuthSuccess) {
-                          // Navigate to Home Page after successful login
-                          Navigator.pushReplacementNamed(context, '/login');
-                        } else if (state is AuthFailed) {
-                          // Show error message if login fails
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.toString())),
-                          );
-                        }
-                      });
-                    } else {
+                BlocConsumer<AuthCubit, AuthState>(
+                  listener: (context, state) {
+                    if (state is AuthSuccess) {
+                      // Navigate to Login Page after successful signup
+                      Navigator.pushReplacementNamed(context, '/login');
+                    } else if (state is AuthFailed) {
+                      // Show error message if signup fails
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please fix the errors')),
+                        SnackBar(content: Text(state.message)),
                       );
                     }
+                  },
+                  builder: (context, state) {
+                    if (state is AuthLoading) {
+                      return const CircularProgressIndicator();
+                    }
+                    return AuthGradientButton(
+                      buttonText: 'Sign Up',
+                      onTap: () {
+                        if (_formKey.currentState!.validate()) {
+                          context.read<AuthCubit>().signUp(
+                                name: nameController.text.trim(),
+                                email: emailController.text.trim(),
+                                password: passwordController.text.trim(),
+                              );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please fix the errors'),
+                            ),
+                          );
+                        }
+                      },
+                    );
                   },
                 ),
               ],

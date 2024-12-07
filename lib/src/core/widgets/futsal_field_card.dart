@@ -82,7 +82,7 @@ class FutsalFieldCard extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
-                        color: Colors.black87,
+                        // color: Colors.black87,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
