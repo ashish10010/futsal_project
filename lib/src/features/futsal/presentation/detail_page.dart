@@ -2,6 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:futsal_booking_app/models/field_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:futsal_booking_app/src/core/constants/constants.dart';
+import 'package:futsal_booking_app/src/core/widgets/gradient_button.dart';
 
 class DetailPage extends StatelessWidget {
   final FieldModel field;
@@ -12,7 +14,11 @@ class DetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(field.name), // Access the name directly from the FieldModel
+        title: Text(
+          field.name,
+          style: whiteTextStyle.copyWith(fontSize: 20, fontWeight: semiBold),
+        ),
+        backgroundColor: Palette.primaryGreen,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -78,26 +84,23 @@ class DetailPage extends StatelessWidget {
         children: [
           Text(
             field.name,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
+            style: headlineTextStyle,
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(Icons.location_pin, color: Palette.darkGreen),
+              const SizedBox(width: 8),
+              Text(
+                field.location,
+                style: bodyTextStyle,
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           Text(
-            "Location: ${field.location}",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Price: \$${field.price.toStringAsFixed(2)} per hour",
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            "Price: Rs.${field.price.toStringAsFixed(2)} per hour",
+            style: subtitleTextStyle.copyWith(fontWeight: semiBold),
           ),
           const SizedBox(height: 8),
           Row(
@@ -106,7 +109,7 @@ class DetailPage extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 "${field.ratings} / 5.0",
-                style: const TextStyle(fontSize: 16),
+                style: bodyTextStyle,
               ),
             ],
           ),
@@ -147,21 +150,11 @@ class DetailPage extends StatelessWidget {
   Widget _availabilityButton(BuildContext context, FieldModel field) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: ElevatedButton(
-        onPressed: () {
+      child: AuthGradientButton(
+        buttonText: "Check Availability",
+        onTap: () {
           Navigator.pushNamed(context, '/booking', arguments: field);
         },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.orange,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        child: const Text(
-          "Check Availability",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
       ),
     );
   }

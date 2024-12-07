@@ -79,8 +79,8 @@ class _LoginPageState extends State<LoginPage> {
               BlocConsumer<AuthCubit, AuthState>(
                 listener: (context, state) {
                   if (state is AuthSuccess) {
-                    // Navigate to Home Page after successful login
-                    Navigator.pushReplacementNamed(context, '/home');
+                    // Navigate to SplashPage to handle role-based redirection
+                    Navigator.pushReplacementNamed(context, '/splash');
                   } else if (state is AuthFailed) {
                     // Show error message if login fails
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -102,7 +102,8 @@ class _LoginPageState extends State<LoginPage> {
                             );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please fix the errors')),
+                          const SnackBar(
+                              content: Text('Please fix the errors')),
                         );
                       }
                     },

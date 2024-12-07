@@ -52,7 +52,7 @@ class _MainPageState extends State<MainPage> {
       const HomePage(),
 
       //booking page
-      const BookingPage(),
+      const ScheduleSlotsPage(),
 
       //Account page
       Container(

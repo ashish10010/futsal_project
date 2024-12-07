@@ -16,7 +16,6 @@ class AuthCubit extends Cubit<AuthState> {
   void signIn({required String email, required String password}) async {
     try {
       emit(AuthLoading());
-      // Replace Firebase logic with API call in AuthService
       UserModel user =
           await _authService.signIn(email: email, password: password);
       emit(AuthSuccess(user));
@@ -30,6 +29,7 @@ class AuthCubit extends Cubit<AuthState> {
     required String name,
     required String email,
     required String password,
+    required String role,
   }) async {
     try {
       emit(AuthLoading());
@@ -38,6 +38,7 @@ class AuthCubit extends Cubit<AuthState> {
         name: name,
         email: email,
         password: password,
+        role: role,
       );
       emit(AuthSuccess(user));
     } catch (e) {
@@ -57,11 +58,12 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  /// Get current user details
-  void getCurrentUser(String id) async {
+  /// Get current user details based on the token
+  void getCurrentUser() async {
     try {
-      // Replace Firebase user fetch with API-based logic
-      UserModel user = await _userService.getUserById(id);
+      emit(AuthLoading());
+      // Fetch user details using the token
+      final user = await _userService.fetchCurrentUser();
       emit(AuthSuccess(user));
     } catch (e) {
       emit(AuthFailed(e.toString()));
