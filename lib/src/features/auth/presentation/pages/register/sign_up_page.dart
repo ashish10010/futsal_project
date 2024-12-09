@@ -16,9 +16,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  String? selectedRole; // To store the selected role
-
-  // final List<String> roles = ['User', 'Futsal Owner', 'Admin']; // Role options
+  String? selectedRole;
 
   @override
   void dispose() {
@@ -104,10 +102,24 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   items: const [
-                    DropdownMenuItem(value: 'user', child: Text('User')),
                     DropdownMenuItem(
-                        value: 'owner', child: Text('Futsal Owner')),
-                    DropdownMenuItem(value: 'admin', child: Text('Admin')),
+                      value: 'user',
+                      child: Text(
+                        'User',
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'owner',
+                      child: Text(
+                        'Futsal Owner',
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'admin',
+                      child: Text(
+                        'Admin',
+                      ),
+                    ),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -124,14 +136,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(height: 24),
                 BlocConsumer<AuthCubit, AuthState>(
                   listener: (context, state) {
-                    if (state is AuthSuccess) {
-                      // Navigate to SplashPage to handle role-based redirection
-                      Navigator.pushReplacementNamed(context, '/splash');
-                    } else if (state is AuthFailed) {
-                      // Show error message if signup fails
+                    if (state is AuthSignUp)
+                     { 
+                      Navigator.pushReplacementNamed(context, '/login');
+                    } else if (state is AuthError)
+                    {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(state.message)),
-                      );
+                      SnackBar(content: Text(state.error)),
+                    );
                     }
                   },
                   builder: (context, state) {

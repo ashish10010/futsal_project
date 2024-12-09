@@ -78,13 +78,18 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 24),
               BlocConsumer<AuthCubit, AuthState>(
                 listener: (context, state) {
-                  if (state is AuthSuccess) {
-                    // Navigate to SplashPage to handle role-based redirection
-                    Navigator.pushReplacementNamed(context, '/splash');
-                  } else if (state is AuthFailed) {
-                    // Show error message if login fails
+                  if (state is AuthLoggedIn) {
+                    final role = state.user.role;
+                    if (role == 'user') {
+                      Navigator.pushReplacementNamed(context, '/mainpage');
+                    } else if (role == 'owner') {
+                      Navigator.pushReplacementNamed(context, '/ownerDashboard');
+                    } else if (role == 'admin') {
+                      Navigator.pushReplacementNamed(context, '/adminPanel');
+                    }
+                  } else if (state is AuthError) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
+                      SnackBar(content: Text(state.error)),
                     );
                   }
                 },
@@ -102,8 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                             );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Please fix the errors')),
+                          const SnackBar(content: Text('Please fix the errors')),
                         );
                       }
                     },

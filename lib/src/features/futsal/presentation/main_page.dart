@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:futsal_booking_app/src/core/constants/string.dart';
 import 'package:futsal_booking_app/src/core/theme/theme.dart';
-import 'package:futsal_booking_app/src/features/booking/presentation/booking_page.dart';
+import 'package:futsal_booking_app/src/features/account/presentation/account_page.dart';
 import 'package:futsal_booking_app/src/features/futsal/presentation/home_page.dart';
 import 'package:futsal_booking_app/src/core/widgets/theme_button.dart';
 import '../../../../cubit/navigation_cubit.dart';
@@ -32,11 +32,11 @@ class _MainPageState extends State<MainPage> {
       label: 'Home',
       selectedIcon: Icon(Icons.home),
     ),
-    NavigationDestination(
-      icon: Icon(Icons.list_outlined),
-      label: 'Booking',
-      selectedIcon: Icon(Icons.list),
-    ),
+    // NavigationDestination(
+    //   icon: Icon(Icons.list_outlined),
+    //   label: 'Booking',
+    //   selectedIcon: Icon(Icons.list),
+    // ),
     NavigationDestination(
       icon: Icon(Icons.person_2_outlined),
       label: 'Account',
@@ -48,16 +48,13 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     //pages to navigate
     final pages = [
-      //main screen
+      
       const HomePage(),
 
-      //booking page
-      const ScheduleSlotsPage(),
+      // const ScheduleSlotsPage(),
 
       //Account page
-      Container(
-        color: Colors.green,
-      ),
+      const AccountPagePage()
     ];
     return Scaffold(
       appBar: AppBar(
@@ -88,7 +85,6 @@ class _MainPageState extends State<MainPage> {
           );
         },
       ),
-      // switch between pages
     );
   }
 }

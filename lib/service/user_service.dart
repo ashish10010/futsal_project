@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'package:futsal_booking_app/src/features/auth/data/model/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../src/features/auth/data/model/user_model.dart';
 
 class UserService {
-  final String baseUrl = 'http://192.168.1.128:3000'; // Replace with your API base URL
+  final String baseUrl = 'http://192.168.100.133:3000'; // Replace with your API base URL
 
   /// Retrieve the current user's details
   Future<UserModel> fetchCurrentUser() async {

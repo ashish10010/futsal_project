@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:futsal_booking_app/src/features/admin/presentation/admin_panel.dart';
 import 'package:futsal_booking_app/src/features/auth/presentation/pages/login/login_page.dart';
 import 'package:futsal_booking_app/src/features/auth/presentation/pages/register/sign_up_page.dart';
 import 'package:futsal_booking_app/src/features/booking/presentation/booking_page.dart';
 import 'package:futsal_booking_app/src/features/futsal/presentation/detail_page.dart';
 import 'package:futsal_booking_app/src/features/futsal/presentation/home_page.dart';
-import 'package:futsal_booking_app/src/features/splash/splash_page.dart';
+import 'package:futsal_booking_app/src/features/owner/presentation/futsal_owner_settings_page.dart';
 import '../../../models/field_model.dart';
-import '../../features/admin/presentation/admin_panel.dart';
 import '../../features/futsal/presentation/main_page.dart';
-import '../../features/owner/presentation/owner_dashboard.dart';
 
 class AppRouter {
   static Route<dynamic> route(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => const SplashPage());
+        return MaterialPageRoute(builder: (_) => const MainPage());
       case '/login':
         return MaterialPageRoute(builder: (_) => const LoginPage());
       case '/signup':
@@ -30,9 +29,9 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const ScheduleSlotsPage());
 
       case '/adminPanel':
-        return MaterialPageRoute(builder: (_) => const AdminPanel());
+        return MaterialPageRoute(builder: (_) => const AdminDashboard());
       case '/ownerDashboard':
-        return MaterialPageRoute(builder: (_) => const OwnerDashboard());
+        return MaterialPageRoute(builder: (_) => const FutsalOwnerSettingsPage());
 
       default:
         return MaterialPageRoute(builder: (_) => const InvalidPage());

@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:futsal_booking_app/src/core/constants/constants.dart';
-import 'package:futsal_booking_app/cubit/booking_cubit.dart';
 import 'package:futsal_booking_app/cubit/field_cubit.dart';
 import 'package:futsal_booking_app/cubit/navigation_cubit.dart';
 import 'package:futsal_booking_app/cubit/ratings_cubit.dart';
@@ -11,9 +10,9 @@ import 'package:futsal_booking_app/src/core/routes/app_router.dart';
 import 'package:futsal_booking_app/src/core/services/firebase_options.dart';
 import 'package:futsal_booking_app/cubit/auth_cubit.dart';
 import 'package:futsal_booking_app/service/auth_service.dart';
-import 'package:futsal_booking_app/service/booking_service.dart';
 import 'package:futsal_booking_app/service/field_service.dart';
 import 'package:futsal_booking_app/service/user_service.dart';
+import 'package:futsal_booking_app/src/core/theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,15 +49,11 @@ class _QuickSalState extends State<QuickSal> {
         BlocProvider(
           create: (_) => RatingCubit(),
         ),
-        BlocProvider(
-          create: (_) => BookingCubit(
-            BookingService(),
-          ),
-        ),
       ],
       child: MaterialApp(
         title: AppString.title,
-        debugShowCheckedModeBanner: false, // Hides the debug banner
+        debugShowCheckedModeBanner: false,
+        themeMode: themeMode, 
         theme: ThemeData(
           scaffoldBackgroundColor: Palette.backgroundColor,
           appBarTheme: const AppBarTheme(

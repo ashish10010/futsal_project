@@ -1,6 +1,6 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../src/features/auth/data/model/user_model.dart';
+import 'package:futsal_booking_app/src/features/auth/data/model/user_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../service/auth_service.dart';
 import '../service/user_service.dart';
 
@@ -12,20 +12,25 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit(this._authService, this._userService) : super(AuthInitial());
 
-  /// Sign in a user via API
-  void signIn({required String email, required String password}) async {
+
+  Future<void> signIn({
+    required String email,
+    required String password,
+  }) async {
     try {
       emit(AuthLoading());
-      UserModel user =
-          await _authService.signIn(email: email, password: password);
-      emit(AuthSuccess(user));
+      final user = await _authService.signIn(
+        email: email,
+        password: password,
+      );
+        emit(AuthLoggedIn(user));
+
     } catch (e) {
-      emit(AuthFailed(e.toString()));
+      emit(AuthError(e.toString()));
     }
   }
 
-  /// Sign up a user via API
-  void signUp({
+  Future<void> signUp({
     required String name,
     required String email,
     required String password,
@@ -33,40 +38,44 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     try {
       emit(AuthLoading());
-      // Replace Firebase logic with API call in AuthService
-      UserModel user = await _authService.signUp(
+      await _authService.signUp(
         name: name,
         email: email,
         password: password,
         role: role,
       );
-      emit(AuthSuccess(user));
+      emit(AuthSignUp());
     } catch (e) {
-      emit(AuthFailed(e.toString()));
+      emit(AuthError(e.toString()));
     }
   }
 
-  /// Sign out the current user
+ 
   void signOut() async {
     try {
       emit(AuthLoading());
-      // Replace Firebase sign-out logic with API-based token invalidation
       await _authService.signOut();
       emit(AuthInitial());
     } catch (e) {
-      emit(AuthFailed(e.toString()));
+      emit(AuthError(e.toString()));
     }
   }
 
   /// Get current user details based on the token
-  void getCurrentUser() async {
+  Future<void> getCurrentUser() async {
     try {
       emit(AuthLoading());
-      // Fetch user details using the token
-      final user = await _userService.fetchCurrentUser();
-      emit(AuthSuccess(user));
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getString('userId');
+      if (userId == null) {
+        emit(AuthError('No user found'));
+        return;
+      }
+
+      final user = await _userService.fetchUserById(userId);
+      emit(AuthLoggedIn(user));
     } catch (e) {
-      emit(AuthFailed(e.toString()));
+      emit(AuthError(e.toString()));
     }
   }
 }

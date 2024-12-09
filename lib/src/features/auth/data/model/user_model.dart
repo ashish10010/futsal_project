@@ -1,47 +1,83 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
 
-import 'package:equatable/equatable.dart';
-
-class UserModel extends Equatable {
+class UserModel {
   final String id;
-  final String? name;
-  final String? email;
-  final String? photo;
-  final String role; // Added role field
-
-  static const empty = UserModel(id: '', role: '');
-
-  const UserModel({
+  final String email;
+  final String name;
+  final String role;
+  final String token;
+  UserModel({
     required this.id,
-    this.name,
-    this.email,
-    this.photo,
+    required this.email,
+    required this.name,
     required this.role,
+    required this.token,
   });
 
-  /// Convert UserModel to Map for API requests
-  Map<String, dynamic> toMap() {
-    return <String, dynamic> {
-      'id': id,
-      'name': name ?? '',
-      'email': email ?? '',
-      'photo': photo ?? '',
-      'role': role,
-    };
-  }
-
-  /// Create UserModel from API JSON response
-  factory UserModel.fromMap(Map<String, dynamic> map) {
+  UserModel copyWith({
+    String? id,
+    String? email,
+    String? name,
+    String? role,
+    String? token,
+  }) {
     return UserModel(
-      id: map['id'] ?? '', // Adjust to match the API's key for user ID
-      name: map['name'],
-      email: map['email'],
-      photo: map['photo'],
-      role: map['role'] ?? 'user', // Default to 'user' if role is missing
+      id: id ?? this.id,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      token: token ?? this.token,
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'email': email,
+      'name': name,
+      'role': role,
+      'token': token,
+    };
+  }
 
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      id: map['id'] ?? '',
+      email: map['email'] ?? '',
+      name: map['name'] ?? '',
+      role: map['role'] ?? '',
+      token: map['token'] ?? '',
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  List<Object?> get props => [id, name, email, photo, role];
+  String toString() {
+    return 'UserModel(id: $id, email: $email, name: $name, role: $role, token: $token)';
+  }
+
+  @override
+  bool operator ==(covariant UserModel other) {
+    if (identical(this, other)) return true;
+  
+    return 
+      other.id == id &&
+      other.email == email &&
+      other.name == name &&
+      other.role == role &&
+      other.token == token;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+      email.hashCode ^
+      name.hashCode ^
+      role.hashCode ^
+      token.hashCode;
+  }
 }
