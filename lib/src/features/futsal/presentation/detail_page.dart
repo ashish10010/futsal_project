@@ -181,7 +181,8 @@ class DetailPage extends StatelessWidget {
       child: AuthGradientButton(
         buttonText: "Check Availability",
         onTap: () {
-          Navigator.pushNamed(context, '/booking', arguments: field);
+          Navigator.pushNamed(context, '/booking', 
+          arguments: field);
         },
       ),
     );

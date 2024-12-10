@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:futsal_booking_app/src/features/booking/presentation/booking_details.dart';
 import '../../features/admin/presentation/admin_panel.dart';
 import '../../features/auth/presentation/pages/login/login_page.dart';
 import '../../features/auth/presentation/pages/register/sign_up_page.dart';
@@ -20,19 +21,26 @@ class AppRouter {
       case '/signup':
         return MaterialPageRoute(builder: (_) => const SignUpPage());
       case '/mainpage':
-          return MaterialPageRoute(builder: (_)=> const MainPage());
+        return MaterialPageRoute(builder: (_) => const MainPage());
       case '/home':
         return MaterialPageRoute(builder: (_) => const HomePage());
       case '/details':
         final field = settings.arguments as FieldModel;
         return MaterialPageRoute(builder: (_) => DetailPage(field: field));
       case '/booking':
-        return MaterialPageRoute(builder: (_) => const ScheduleSlotsPage());
+        final field = settings.arguments as FieldModel;
+        return MaterialPageRoute(
+            builder: (_) => ScheduleSlotsPage(
+                  field: field,
+                ));
+      case '/bookingdetails':
+        return MaterialPageRoute(builder: (_) => const BookedDetailsPage());
 
       case '/adminPanel':
         return MaterialPageRoute(builder: (_) => const AdminDashboard());
       case '/ownerDashboard':
-        return MaterialPageRoute(builder: (_) => const FutsalOwnerSettingsPage());
+        return MaterialPageRoute(
+            builder: (_) => const FutsalOwnerSettingsPage());
 
       default:
         return MaterialPageRoute(builder: (_) => const InvalidPage());

@@ -7,16 +7,22 @@ class AuthService {
   final String baseUrl = 'http://192.168.1.68:3000';
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  Future<void> _saveToken(String token) async {
+  Future<void> _saveTokenAndUserId(String token, String userId) async {
     await _storage.write(key: 'token', value: token);
+    await _storage.write(key: 'userId', value: userId);
   }
 
   Future<String?> _getToken() async {
     return await _storage.read(key: 'token');
   }
 
-  Future<void> _deleteToken() async {
+  Future<String?> _getUserId() async {
+    return await _storage.read(key: 'userId');
+  }
+
+  Future<void> _deleteTokenAndUserId() async {
     await _storage.delete(key: 'token');
+    await _storage.delete(key: 'userId');
   }
 
   Future<UserModel> signUp({
@@ -27,25 +33,24 @@ class AuthService {
   }) async {
     try {
       final res = await http.post(
-        Uri.parse(
-          '$baseUrl/auth/signup',
-        ),
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: jsonEncode(
-          {
-            'name': name,
-            'email': email,
-            'password': password,
-            'role': role,
-          },
-        ),
+        Uri.parse('$baseUrl/auth/signup'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'password': password,
+          'role': role,
+        }),
       );
+
       if (res.statusCode != 201) {
         throw jsonDecode(res.body)['message'];
       }
-      return UserModel.fromJson(res.body);
+
+      final data = jsonDecode(res.body);
+      await _saveTokenAndUserId(data['token'], data['id']); // Save token and userId
+
+      return UserModel.fromMap(data);
     } catch (e) {
       throw e.toString();
     }
@@ -64,7 +69,7 @@ class AuthService {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
-      await _saveToken(data['token']); // Save token securely
+      await _saveTokenAndUserId(data['token'], data['id']); // Save token and userId
       return UserModel.fromMap(data);
     } else {
       final errorMessage =
@@ -74,6 +79,9 @@ class AuthService {
   }
 
   Future<void> signOut() async {
-    await _storage.delete(key: 'token');
+    await _deleteTokenAndUserId();
   }
+
+  Future<String?> getToken() => _getToken();
+  Future<String?> getUserId() => _getUserId();
 }

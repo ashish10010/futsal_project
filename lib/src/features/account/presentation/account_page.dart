@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
 import '../../booking/presentation/booking_history.dart';
-import '../../booking/presentation/booking_page.dart';
 import '../../booking/presentation/currently_booked_page.dart';
 import '../../owner/presentation/futsal_owner_settings_page.dart';
 import 'change_password.dart';
@@ -71,18 +69,6 @@ class _AccountPagePageState extends State<AccountPagePage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => CurrentlyBookedPage(),
-                    ),
-                  );
-                },
-              ),
-              SettingsListTile(
-                title: "Book Futsal",
-                icon: Icons.schedule,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ScheduleSlotsPage(),
                     ),
                   );
                 },

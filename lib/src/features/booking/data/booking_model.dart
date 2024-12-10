@@ -58,16 +58,16 @@ class BookingModel {
 
   factory BookingModel.fromMap(Map<String, dynamic> map) {
     return BookingModel(
-      id: map['_id'] ?? '', // Map `_id` to `id`
+      id: map['_id'] ?? '',
       futsalId: map['futsalId'] ?? '',
       packageType: map['packageType'] ?? '',
-      amount: (map['amount'] as num?)?.toDouble() ?? 0.0, // Convert to `double`
+      amount: (map['amount'] as num?)?.toDouble() ?? 0.0, 
       date: DateTime.parse(map['date']), // Parse ISO date string
       userId: map['userId'] ?? '',
       createdAt: DateTime.parse(map['createdAt']), // Parse ISO date string
       updatedAt: map['updatedAt'] != null
           ? DateTime.parse(map['updatedAt'])
-          : null, // Nullable for missing `updatedAt`
+          : null, 
     );
   }
 
