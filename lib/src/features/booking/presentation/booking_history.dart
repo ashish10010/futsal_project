@@ -13,7 +13,7 @@ class BookingHistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Fetch user bookings when the page loads
     context.read<BookingCubit>().fetchUserBookings();
-    context.read<FieldCubit>().fetchFields(); // Fetch all fields
+    context.read<FieldCubit>().fetchAllFields(); // Fetch all fields
 
     return Scaffold(
       appBar: AppBar(

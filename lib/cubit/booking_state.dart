@@ -28,12 +28,3 @@ class BookingFailure extends BookingState {
   @override
   List<Object?> get props => [error];
 }
-
-class AddBookingSuccess extends BookingState {
-  final BookingModel booking;
-
-  const AddBookingSuccess(this.booking);
-
-  @override
-  List<Object?> get props => [booking];
-}

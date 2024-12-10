@@ -8,13 +8,17 @@ class FieldService {
   final String baseUrl = 'http://192.168.1.68:3000';
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  //get token from secure storage:
-
+  // Retrieve the token
   Future<String?> _getToken() async {
     return await _storage.read(key: 'token');
   }
 
-  //Get all futsalfields
+  // Retrieve the userId from storage
+  Future<String?> _getUserId() async {
+    return await _storage.read(key: 'userId'); // Ensure `userId` is saved during login
+  }
+
+  // Fetch all futsal fields
   Future<List<FieldModel>> fetchAllFields() async {
     final token = await _getToken();
     if (token == null) {
@@ -38,7 +42,7 @@ class FieldService {
     }
   }
 
-  //Fetch a single futsal field by ID
+  // Fetch a single futsal field by ID
   Future<FieldModel> getFutsalById(String futsalId) async {
     final token = await _getToken();
     if (token == null) {
@@ -62,17 +66,18 @@ class FieldService {
     }
   }
 
-  //Add a new futsal field (For Admin/Owner)
+  // Add a new futsal field (For Admin/Owner)
   Future<void> addFutsal(FieldModel field) async {
     final token = await _getToken();
-    if (token == null) {
-      throw Exception('No token found. User not authenticated.');
+    final userId = await _getUserId(); // Fetch the userId for the owner
+    if (token == null || userId == null) {
+      throw Exception('User not authenticated or userId missing.');
     }
 
     final url = Uri.parse('$baseUrl/futsal/add-futsal');
     final response = await http.post(
       url,
-      body: json.encode(field.toMap()),
+      body: json.encode({...field.toMap(), 'userId': userId}),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -84,11 +89,8 @@ class FieldService {
     }
   }
 
-  //Update a futsal field by ID(admin/owner)
-  Future<void> updateFutsalById(
-    String futsalId,
-    FieldModel updatedField,
-  ) async {
+  // Update a futsal field by ID
+  Future<void> updateFutsalById(String futsalId, FieldModel updatedField) async {
     final token = await _getToken();
     if (token == null) {
       throw Exception('No token found. User not authenticated.');
@@ -109,7 +111,7 @@ class FieldService {
     }
   }
 
-  //Delete a futsal field by ID (For Admin/Owner)
+  // Delete a futsal field by ID
   Future<void> deleteFutsal(String futsalId) async {
     final token = await _getToken();
     if (token == null) {

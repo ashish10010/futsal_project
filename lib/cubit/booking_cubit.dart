@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../service/booking_service.dart';
-import '../src/features/booking/data/booking_model.dart';
+import 'package:futsal_booking_app/service/booking_service.dart';
+import 'package:futsal_booking_app/src/features/booking/data/booking_model.dart';
 
 part 'booking_state.dart';
 
@@ -10,8 +10,8 @@ class BookingCubit extends Cubit<BookingState> {
 
   BookingCubit(this.bookingService) : super(BookingInitial());
 
-  /// Fetch all bookings
-  Future<void> fetchBookings() async {
+  // Fetch all bookings for the logged-in user
+  Future<void> fetchUserBookings() async {
     try {
       emit(BookingLoading());
       final bookings = await bookingService.getAllBookings();
@@ -21,7 +21,7 @@ class BookingCubit extends Cubit<BookingState> {
     }
   }
 
-  /// Fetch bookings by futsal ID
+  // Fetch bookings for a specific futsal
   Future<void> fetchBookingsByFutsal(String futsalId) async {
     try {
       emit(BookingLoading());
@@ -32,7 +32,7 @@ class BookingCubit extends Cubit<BookingState> {
     }
   }
 
-  /// Add a new booking
+  // Add a new booking
   Future<void> addBooking({
     required String futsalId,
     required String packageType,
@@ -41,13 +41,47 @@ class BookingCubit extends Cubit<BookingState> {
   }) async {
     try {
       emit(BookingLoading());
-      final newBooking = await bookingService.createBooking(
+      await bookingService.createBooking(
         futsalId: futsalId,
         packageType: packageType,
         amount: amount,
         date: date,
       );
-      emit(AddBookingSuccess(newBooking));
+      await fetchUserBookings(); // Refresh bookings after adding
+    } catch (e) {
+      emit(BookingFailure(e.toString()));
+    }
+  }
+
+  // Update an existing booking
+  Future<void> updateBooking({
+    required String bookingId,
+    String? futsalId,
+    String? packageType,
+    double? amount,
+    String? date,
+  }) async {
+    try {
+      emit(BookingLoading());
+      await bookingService.updateBooking(
+        bookingId: bookingId,
+        futsalId: futsalId,
+        packageType: packageType,
+        amount: amount,
+        date: date,
+      );
+      await fetchUserBookings(); // Refresh bookings after updating
+    } catch (e) {
+      emit(BookingFailure(e.toString()));
+    }
+  }
+
+  // Delete a booking
+  Future<void> deleteBooking(String bookingId) async {
+    try {
+      emit(BookingLoading());
+      await bookingService.deleteBooking(bookingId);
+      await fetchUserBookings(); // Refresh bookings after deleting
     } catch (e) {
       emit(BookingFailure(e.toString()));
     }

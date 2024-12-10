@@ -8,12 +8,17 @@ class BookingService {
   final String baseUrl = 'http://192.168.1.68:3000/booking'; 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  /// Helper to fetch token from secure storage
+  // Retrieve the token
   Future<String?> _getToken() async {
     return await _storage.read(key: 'token');
   }
 
-  /// Create a new booking
+  // Retrieve the userId
+  Future<String?> _getUserId() async {
+    return await _storage.read(key: 'userId');
+  }
+
+  // Create a new booking
   Future<BookingModel> createBooking({
     required String futsalId,
     required String packageType,
@@ -21,7 +26,10 @@ class BookingService {
     required String date,
   }) async {
     final token = await _getToken();
-    if (token == null) throw Exception('User is not authenticated.');
+    final userId = await _getUserId();
+    if (token == null || userId == null) {
+      throw Exception('User is not authenticated or userId missing.');
+    }
 
     final response = await http.post(
       Uri.parse('$baseUrl/add-booking'),
@@ -32,8 +40,9 @@ class BookingService {
       body: jsonEncode({
         'futsalId': futsalId,
         'packageType': packageType,
-        'amount': amount.toString(),
+        'amount': amount,
         'date': date,
+        'userId': userId, // Pass userId
       }),
     );
 
@@ -44,13 +53,16 @@ class BookingService {
     }
   }
 
-  /// Get all bookings for the authenticated user
+  // Get all bookings for the authenticated user
   Future<List<BookingModel>> getAllBookings() async {
     final token = await _getToken();
-    if (token == null) throw Exception('User is not authenticated.');
+    final userId = await _getUserId();
+    if (token == null || userId == null) {
+      throw Exception('User is not authenticated or userId missing.');
+    }
 
     final response = await http.get(
-      Uri.parse('$baseUrl/all-bookings'),
+      Uri.parse('$baseUrl/user/$userId'), // Updated endpoint
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -65,10 +77,12 @@ class BookingService {
     }
   }
 
-  /// Get booking by ID
+  // Get booking by ID
   Future<List<BookingModel>> getBookingById(String bookingId) async {
     final token = await _getToken();
-    if (token == null) throw Exception('User is not authenticated.');
+    if (token == null) {
+      throw Exception('User is not authenticated.');
+    }
 
     final response = await http.get(
       Uri.parse('$baseUrl/search/$bookingId'),
@@ -79,14 +93,14 @@ class BookingService {
     );
 
     if (response.statusCode == 200) {
-       final List<dynamic> data =jsonDecode(response.body);
-       return data.map((json) => BookingModel.fromMap(json)).toList();
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => BookingModel.fromMap(json)).toList();
     } else {
       throw Exception('Failed to fetch booking: ${response.body}');
     }
   }
 
-  /// Update booking by ID
+  // Update booking by ID
   Future<void> updateBooking({
     required String bookingId,
     String? futsalId,
@@ -95,7 +109,9 @@ class BookingService {
     String? date,
   }) async {
     final token = await _getToken();
-    if (token == null) throw Exception('User is not authenticated.');
+    if (token == null) {
+      throw Exception('User is not authenticated.');
+    }
 
     final response = await http.put(
       Uri.parse('$baseUrl/update-booking/$bookingId'),
@@ -116,10 +132,12 @@ class BookingService {
     }
   }
 
-  /// Delete booking by ID
+  // Delete booking by ID
   Future<void> deleteBooking(String bookingId) async {
     final token = await _getToken();
-    if (token == null) throw Exception('User is not authenticated.');
+    if (token == null) {
+      throw Exception('User is not authenticated.');
+    }
 
     final response = await http.delete(
       Uri.parse('$baseUrl/delete-booking/$bookingId'),

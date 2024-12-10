@@ -1,6 +1,11 @@
 part of 'field_cubit.dart';
 
-abstract class FieldState {}
+abstract class FieldState extends Equatable {
+  const FieldState();
+
+  @override
+  List<Object?> get props => [];
+}
 
 class FieldInitial extends FieldState {}
 
@@ -9,23 +14,17 @@ class FieldLoading extends FieldState {}
 class FieldSuccess extends FieldState {
   final List<FieldModel> fields;
 
-  FieldSuccess(this.fields);
-}
+  const FieldSuccess(this.fields);
 
-class SingleFieldSuccess extends FieldState {
-  final FieldModel field;
-
-  SingleFieldSuccess(this.field);
+  @override
+  List<Object?> get props => [fields];
 }
 
 class FieldFailure extends FieldState {
   final String error;
 
-  FieldFailure(this.error);
-}
+  const FieldFailure(this.error);
 
-class FieldOperationSuccess extends FieldState {
-  final String message;
-
-  FieldOperationSuccess(this.message);
+  @override
+  List<Object?> get props => [error];
 }

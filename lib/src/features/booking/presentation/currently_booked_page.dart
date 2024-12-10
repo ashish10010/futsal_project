@@ -1,28 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:futsal_booking_app/src/features/booking/data/booking_model.dart';
+
+import '../../../../cubit/booking_cubit.dart';
+import '../../../../cubit/field_cubit.dart';
 
 class CurrentlyBookedPage extends StatelessWidget {
-  final List<Map<String, dynamic>> bookings = [
-    {
-      "futsalName": "Star Futsal",
-      "location": "Uptown",
-      "time": "10:00 AM - 12:00 PM",
-      "date": "2024-12-05",
-      "price": "Rs. 1500",
-      "imageUrl": "https://via.placeholder.com/150", // Placeholder image
-    },
-    {
-      "futsalName": "City Futsal",
-      "location": "Downtown",
-      "time": "2:00 PM - 4:00 PM",
-      "date": "2024-12-10",
-      "price": "Rs. 2000",
-      "imageUrl": "https://via.placeholder.com/150",
-    },
-  ];
+  const CurrentlyBookedPage({super.key});
 
-  CurrentlyBookedPage({super.key});
-
-  void _cancelBooking(BuildContext context, int index) {
+  /// Method to cancel a booking
+  void _cancelBooking(BuildContext context, BookingModel booking) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -53,7 +40,7 @@ class CurrentlyBookedPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  "Are you sure you want to cancel your booking for ${bookings[index]['futsalName']}?",
+                  "Are you sure you want to cancel your booking for ${booking.futsalId}?",
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 16, color: Colors.black87),
                 ),
@@ -87,8 +74,12 @@ class CurrentlyBookedPage extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
+                          // Trigger cancellation through BookingCubit
+                          context
+                              .read<BookingCubit>()
+                              .deleteBooking(booking.id);
                           Navigator.of(context).pop(); // Close dialog
-                          _confirmCancellation(context, index);
+                          _confirmCancellation(context, booking);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
@@ -117,11 +108,12 @@ class CurrentlyBookedPage extends StatelessWidget {
     );
   }
 
-  void _confirmCancellation(BuildContext context, int index) {
+  /// Confirmation of cancellation
+  void _confirmCancellation(BuildContext context, BookingModel booking) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          "Booking for ${bookings[index]['futsalName']} has been canceled.",
+          "Booking for ${booking.futsalId} has been canceled.",
         ),
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 2),
@@ -141,119 +133,139 @@ class CurrentlyBookedPage extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: bookings.isEmpty
-            ? const Center(
+      body: BlocBuilder<BookingCubit, BookingState>(
+        builder: (context, state) {
+          if (state is BookingLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is BookingSuccess) {
+            final bookings = state.bookings;
+
+            if (bookings.isEmpty) {
+              return const Center(
                 child: Text(
                   "No current bookings available.",
                   style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
-              )
-            : ListView.builder(
-                itemCount: bookings.length,
-                itemBuilder: (context, index) {
-                  final booking = bookings[index];
-                  return Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    margin: const EdgeInsets.only(bottom: 16),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  booking['imageUrl']!,
-                                  height: 100,
-                                  width: 100,
-                                  fit: BoxFit.cover,
-                                ),
+              );
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(16.0),
+              itemCount: bookings.length,
+              itemBuilder: (context, index) {
+                final booking = bookings[index];
+
+                // Fetch futsal details
+                final futsal = context
+                    .read<FieldCubit>()
+                    .getFieldById(booking.futsalId); 
+
+                return Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                futsal.cardImg,
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      booking['futsalName']!,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    futsal.name,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
                                     ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      "Location: ${booking['location']}",
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      "Date: ${booking['date']}",
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    Text(
-                                      "Time: ${booking['time']}",
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                booking['price']!,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                ),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => _cancelBooking(context, index),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                ),
-                                child: const Text(
-                                  "Cancel Booking",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "Location: ${futsal.location}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
                                   ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "Date: ${booking.date.toLocal()}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Time: ${booking.packageType}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Rs. ${booking.amount}",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => _cancelBooking(context, booking),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
+                              child: const Text(
+                                "Cancel Booking",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
+            );
+          } else if (state is BookingFailure) {
+            return Center(child: Text('Error: ${state.error}'));
+          } else {
+            return const Center(child: Text('No data available.'));
+          }
+        },
       ),
     );
   }

@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     // Fetch fields when the homepage is initialized
-    context.read<FieldCubit>().fetchFields();
+    context.read<FieldCubit>().fetchAllFields();
   }
 
   @override
