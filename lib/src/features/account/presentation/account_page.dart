@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../cubit/auth_cubit.dart';
 import '../../booking/presentation/booking_history.dart';
 import '../../booking/presentation/currently_booked_page.dart';
-import '../../owner/presentation/futsal_owner_settings_page.dart';
-import 'change_password.dart';
 
-class AccountPagePage extends StatefulWidget {
-  const AccountPagePage({super.key});
+class AccountPage extends StatefulWidget {
+  const AccountPage({super.key});
 
   @override
-  State<AccountPagePage> createState() => _AccountPagePageState();
+  State<AccountPage> createState() => _AccountPageState();
 }
 
-class _AccountPagePageState extends State<AccountPagePage> {
+class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
+    final user = (context.read<AuthCubit>().state as AuthLoggedIn).user;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Account Settings', style: TextStyle(fontSize: 20)),
@@ -22,31 +24,16 @@ class _AccountPagePageState extends State<AccountPagePage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
         children: [
-          // Header Section with Circle Avatar, Name, and Email
-          const UserHeader(
-            name: "John Doe",
-            email: "john.doe@example.com",
-            avatarUrl:
-                "https://via.placeholder.com/150", // Replace with actual image URL
+          UserHeader(
+            name: user.name,
+            email: user.email,
+            avatarUrl: "https://via.placeholder.com/150",
           ),
           const SizedBox(height: 20),
 
-          // Section for Account Management
           SettingsSection(
             sectionTitle: "Account Management",
             items: [
-              SettingsListTile(
-                title: "Change Password",
-                icon: Icons.lock_outline,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ChangePasswordPage(),
-                    ),
-                  );
-                },
-              ),
               SettingsListTile(
                 title: "Logout",
                 icon: Icons.logout,
@@ -56,8 +43,6 @@ class _AccountPagePageState extends State<AccountPagePage> {
               ),
             ],
           ),
-
-          // Section for Booking Management
           SettingsSection(
             sectionTitle: "Booking Management",
             items: [
@@ -65,24 +50,14 @@ class _AccountPagePageState extends State<AccountPagePage> {
                 title: "My Bookings",
                 icon: Icons.bookmark_added,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CurrentlyBookedPage(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, '/currentlybooked');
                 },
               ),
               SettingsListTile(
                 title: "Booking History",
                 icon: Icons.history,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BookingHistoryPage(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, '/bookinghistory');
                 },
               ),
             ],
@@ -96,14 +71,14 @@ class _AccountPagePageState extends State<AccountPagePage> {
                 title: "FAQs",
                 icon: Icons.help_outline,
                 onTap: () {
-                  // Add your navigation logic here
+                  // Add navigation logic for FAQs
                 },
               ),
               SettingsListTile(
                 title: "About Us",
                 icon: Icons.info_outline,
                 onTap: () {
-                  // Add your navigation logic here
+                  // Add navigation logic for About Us
                 },
               ),
             ],
@@ -173,8 +148,12 @@ class _AccountPagePageState extends State<AccountPagePage> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                          _logout(); // Log the user out
+                          Navigator.of(context).pop(); // Close dialog
+                          context.read<AuthCubit>().signOut();
+                          Navigator.pushReplacementNamed(
+                            context,
+                            "/login",
+                          ); // Navigate to Login
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -202,17 +181,105 @@ class _AccountPagePageState extends State<AccountPagePage> {
       },
     );
   }
-
-  // Function to handle logout logic
-  void _logout() {
-    Navigator.pushReplacementNamed(
-      context,
-      "/login",
-    ); // Example: Navigate to login screen
-  }
-
-  
 }
 
+// User Header Widget
+class UserHeader extends StatelessWidget {
+  final String name;
+  final String email;
+  final String avatarUrl;
 
+  const UserHeader({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.avatarUrl,
+  });
 
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 40,
+          backgroundImage: NetworkImage(avatarUrl),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          name,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          email,
+          style: const TextStyle(fontSize: 14, color: Colors.black54),
+        ),
+      ],
+    );
+  }
+}
+
+// Section List Tile Widget
+class SettingsListTile extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const SettingsListTile({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.green),
+      title: Text(title, style: const TextStyle(fontSize: 16)),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: onTap,
+    );
+  }
+}
+
+// Section Wrapper Widget
+class SettingsSection extends StatelessWidget {
+  final String sectionTitle;
+  final List<SettingsListTile> items;
+
+  const SettingsSection({
+    super.key,
+    required this.sectionTitle,
+    required this.items,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 12),
+        Text(
+          sectionTitle,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Card(
+          elevation: 2,
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            children: items,
+          ),
+        ),
+      ],
+    );
+  }
+}

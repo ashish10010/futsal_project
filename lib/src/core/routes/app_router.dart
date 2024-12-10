@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:futsal_booking_app/src/features/booking/presentation/booking_details.dart';
+import 'package:futsal_booking_app/src/features/booking/presentation/booking_history.dart';
+import 'package:futsal_booking_app/src/features/booking/presentation/currently_booked_page.dart';
 import '../../features/admin/presentation/admin_panel.dart';
 import '../../features/auth/presentation/pages/login/login_page.dart';
 import '../../features/auth/presentation/pages/register/sign_up_page.dart';
@@ -35,6 +37,12 @@ class AppRouter {
                 ));
       case '/bookingdetails':
         return MaterialPageRoute(builder: (_) => const BookedDetailsPage());
+
+             case '/currentlybooked':
+        return MaterialPageRoute(builder: (_) => const CurrentlyBookedPage());
+
+             case '/bookinghistory':
+        return MaterialPageRoute(builder: (_) => const BookingHistoryPage());
 
       case '/adminPanel':
         return MaterialPageRoute(builder: (_) => const AdminDashboard());

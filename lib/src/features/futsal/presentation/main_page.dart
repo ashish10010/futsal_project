@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:futsal_booking_app/src/core/theme/theme.dart';
-import 'package:futsal_booking_app/src/features/account/presentation/account_page.dart';
 import 'package:futsal_booking_app/src/features/futsal/presentation/home_page.dart';
 import '../../../../cubit/navigation_cubit.dart';
+import '../../account/presentation/account_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({
@@ -48,8 +48,8 @@ class _MainPageState extends State<MainPage> {
     final pages = [
       
       const HomePage(),
-      //Account page
-      const AccountPagePage()
+
+      const AccountPage()
     ];
     return Scaffold(
       body: BlocBuilder<NavigationCubit, int>(

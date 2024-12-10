@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:futsal_booking_app/src/features/auth/data/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,7 +24,7 @@ class AuthCubit extends Cubit<AuthState> {
         email: email,
         password: password,
       );
-        emit(AuthLoggedIn(user));
+        emit(AuthLoggedIn(user: user));
 
     } catch (e) {
       emit(AuthError(e.toString()));
@@ -73,7 +74,7 @@ class AuthCubit extends Cubit<AuthState> {
       }
 
       final user = await _userService.fetchUserById(userId);
-      emit(AuthLoggedIn(user));
+      emit(AuthLoggedIn( user: user));
     } catch (e) {
       emit(AuthError(e.toString()));
     }

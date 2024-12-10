@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:futsal_booking_app/src/features/owner/presentation/view_futsal_details.dart';
 import 'package:futsal_booking_app/src/features/owner/presentation/view_bookings.dart';
-import '../../account/presentation/change_password.dart';
 import 'add_futsal_court.dart';
 
 class FutsalOwnerSettingsPage extends StatefulWidget {
@@ -90,18 +89,6 @@ class _FutsalOwnerSettingsPageState extends State<FutsalOwnerSettingsPage> {
           SettingsSection(
             sectionTitle: "Account Management",
             items: [
-              SettingsListTile(
-                title: "Change Password",
-                icon: Icons.lock_outline,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ChangePasswordPage(),
-                    ),
-                  );
-                },
-              ),
               SettingsListTile(
                 title: "Logout",
                 icon: Icons.logout,

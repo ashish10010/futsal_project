@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:futsal_booking_app/cubit/booking_cubit.dart';
+import 'package:futsal_booking_app/service/booking_service.dart';
 import 'package:futsal_booking_app/src/core/constants/constants.dart';
 import 'package:futsal_booking_app/cubit/field_cubit.dart';
 import 'package:futsal_booking_app/cubit/navigation_cubit.dart';
@@ -44,13 +46,18 @@ class _QuickSalState extends State<QuickSal> {
           ),
         ),
         BlocProvider(
+          create: (_) => BookingCubit(
+            BookingService(),
+          ),
+        ),
+        BlocProvider(
           create: (_) => RatingCubit(),
         ),
       ],
       child: MaterialApp(
         title: AppString.title,
         debugShowCheckedModeBanner: false,
-        themeMode: themeMode, 
+        themeMode: themeMode,
         theme: ThemeData(
           scaffoldBackgroundColor: Palette.backgroundColor,
           appBarTheme: const AppBarTheme(
@@ -65,7 +72,7 @@ class _QuickSalState extends State<QuickSal> {
             surface: Palette.backgroundColor,
             onSurface: Palette.grey,
           ),
-         textTheme: TextTheme(
+          textTheme: TextTheme(
             displayLarge: headlineTextStyle,
             bodyLarge: bodyTextStyle,
           ),
@@ -86,7 +93,8 @@ class _QuickSalState extends State<QuickSal> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Palette.primaryGreen, width: 2),
+              borderSide:
+                  const BorderSide(color: Palette.primaryGreen, width: 2),
             ),
           ),
         ),
