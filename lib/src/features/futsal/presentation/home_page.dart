@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:futsal_booking_app/cubit/field_cubit.dart';
+import '../../../../cubit/field_cubit.dart';
 import '../../../core/widgets/futsal_field_card.dart';
 import '../../../core/constants/constants.dart';
 
@@ -15,36 +15,42 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Fetch data when homepage is initialized
+    // Fetch fields when the homepage is initialized
     context.read<FieldCubit>().fetchFields();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "QuickSal",
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Palette.primaryGreen,
+        elevation: 0,
+      ),
       body: SafeArea(
-        minimum: const EdgeInsets.all(4.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _headerSection(),
-              const SizedBox(height: 20),
-              _searchBar(),
-              const SizedBox(height: 20),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            _headerSection(),
+            const SizedBox(height: 10),
+            _searchBar(),
+            const SizedBox(height: 20),
+            const Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  "Explore Available Futsal Fields",
+                  "Explore Futsal Fields",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Palette.primaryGreen,
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
-              BlocBuilder<FieldCubit, FieldState>(
+            ),
+            Expanded(
+              child: BlocBuilder<FieldCubit, FieldState>(
                 builder: (context, state) {
                   if (state is FieldLoading) {
                     return const Center(
@@ -52,14 +58,10 @@ class _HomePageState extends State<HomePage> {
                     );
                   } else if (state is FieldSuccess) {
                     return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: state.fields.length,
                       itemBuilder: (context, index) {
                         final field = state.fields[index];
-                        return FutsalFieldCard(
-                          fields: field, // Pass the entire FieldModel object
-                        );
+                        return FutsalFieldCard(fields: field);
                       },
                     );
                   } else if (state is FieldFailure) {
@@ -70,11 +72,11 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   }
-                  return Container();
+                  return const SizedBox.shrink();
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -82,10 +84,10 @@ class _HomePageState extends State<HomePage> {
 
   Widget _headerSection() {
     return Container(
-      height: 250,
+      height: 200,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/abc_futsal2.jpg'), // Replace with your hero image
+          image: AssetImage('assets/images/abc_futsal2.jpg'),
           fit: BoxFit.cover,
         ),
         borderRadius: BorderRadius.only(
@@ -102,7 +104,7 @@ class _HomePageState extends State<HomePage> {
               "Welcome to QuickSal",
               style: headlineTextStyle.copyWith(
                 color: Palette.white,
-                fontSize: 28,
+                fontSize: 24,
               ),
             ),
           ),
@@ -113,7 +115,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _searchBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: TextField(
         decoration: InputDecoration(
           hintText: "Search futsal fields...",

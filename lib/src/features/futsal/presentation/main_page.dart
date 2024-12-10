@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:futsal_booking_app/src/core/constants/string.dart';
 import 'package:futsal_booking_app/src/core/theme/theme.dart';
 import 'package:futsal_booking_app/src/features/account/presentation/account_page.dart';
 import 'package:futsal_booking_app/src/features/futsal/presentation/home_page.dart';
-import 'package:futsal_booking_app/src/core/widgets/theme_button.dart';
 import '../../../../cubit/navigation_cubit.dart';
 
 class MainPage extends StatefulWidget {
@@ -50,23 +48,10 @@ class _MainPageState extends State<MainPage> {
     final pages = [
       
       const HomePage(),
-
-      // const ScheduleSlotsPage(),
-
       //Account page
       const AccountPagePage()
     ];
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppString.title),
-        elevation: 4.0,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        actions: [
-          ThemeButton(
-            changeThemeMode: changeThemeMode,
-          ),
-        ],
-      ),
       body: BlocBuilder<NavigationCubit, int>(
         builder: (context, currentTabIndex) {
           return pages[currentTabIndex];

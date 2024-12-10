@@ -1,44 +1,132 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:futsal_booking_app/models/field_model.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import '../src/features/futsal/data/models/field_model.dart';
 
 class FieldService {
-  final CollectionReference _fieldRef =
-      FirebaseFirestore.instance.collection('futsalFields');
+  final String baseUrl = 'http://192.168.1.68:3000';
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  // Fetch all fields from Firestore
-  Future<List<FieldModel>> fetchFields() async {
-    try {
-      // Retrieve data from Firestore
-      QuerySnapshot result = await _fieldRef.get();
+  //get token from secure storage:
 
-      // Map Firestore documents to a list of FieldModel objects
-      List<FieldModel> dataField = result.docs.map((doc) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  Future<String?> _getToken() async {
+    return await _storage.read(key: 'token');
+  }
 
-        // Fetching the GeoPoint coordinates
-        GeoPoint? geoPoint = data['coordinates'] as GeoPoint?;
+  //Get all futsalfields
+  Future<List<FieldModel>> fetchAllFields() async {
+    final token = await _getToken();
+    if (token == null) {
+      throw Exception('No token found. User not authenticated.');
+    }
 
-        // Return the FieldModel object
-        return FieldModel.fromJson(
-          doc.id,  // Use Firestore's auto-generated ID
-          {
-            'name': data['name'] ?? '',
-            'fieldType': data['fieldType'] ?? '',
-            'cardImageUrl': data['cardImageUrl'] ?? '',
-            'detailImageUrl': List<String>.from(data['detailImageUrl'] ?? []),
-            'description': data['description'] ?? '',
-            'ratings': (data['ratings'] ?? 0).toDouble(),
-            'price': (data['price'] ?? 0).toDouble(),
-            'location': data['location'] ?? '',
-            'coordinates': geoPoint,  // Add coordinates to the data
-          },
-        );
-      }).toList();
+    final url = Uri.parse('$baseUrl/futsal/all-futsal');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
 
-      return dataField;
-    } catch (e) {
-      print('Error fetching futsal fields: $e');
-      rethrow;
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body) as List;
+      return data.map((field) => FieldModel.fromMap(field)).toList();
+    } else {
+      throw Exception('Failed to fetch futsal fields: ${response.body}');
+    }
+  }
+
+  //Fetch a single futsal field by ID
+  Future<FieldModel> getFutsalById(String futsalId) async {
+    final token = await _getToken();
+    if (token == null) {
+      throw Exception('No token found. User not authenticated.');
+    }
+
+    final url = Uri.parse('$baseUrl/futsal/$futsalId');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return FieldModel.fromMap(data);
+    } else {
+      throw Exception('Failed to fetch futsal field: ${response.body}');
+    }
+  }
+
+  //Add a new futsal field (For Admin/Owner)
+  Future<void> addFutsal(FieldModel field) async {
+    final token = await _getToken();
+    if (token == null) {
+      throw Exception('No token found. User not authenticated.');
+    }
+
+    final url = Uri.parse('$baseUrl/futsal/add-futsal');
+    final response = await http.post(
+      url,
+      body: json.encode(field.toMap()),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception('Failed to add futsal: ${response.body}');
+    }
+  }
+
+  //Update a futsal field by ID(admin/owner)
+  Future<void> updateFutsalById(
+    String futsalId,
+    FieldModel updatedField,
+  ) async {
+    final token = await _getToken();
+    if (token == null) {
+      throw Exception('No token found. User not authenticated.');
+    }
+
+    final url = Uri.parse('$baseUrl/futsal/$futsalId');
+    final response = await http.put(
+      url,
+      body: json.encode(updatedField.toMap()),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update futsal field: ${response.body}');
+    }
+  }
+
+  //Delete a futsal field by ID (For Admin/Owner)
+  Future<void> deleteFutsal(String futsalId) async {
+    final token = await _getToken();
+    if (token == null) {
+      throw Exception('No token found. User not authenticated.');
+    }
+
+    final url = Uri.parse('$baseUrl/futsal/$futsalId');
+    final response = await http.delete(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete futsal: ${response.body}');
     }
   }
 }

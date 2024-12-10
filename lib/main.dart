@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:futsal_booking_app/src/core/constants/constants.dart';
@@ -7,7 +6,6 @@ import 'package:futsal_booking_app/cubit/navigation_cubit.dart';
 import 'package:futsal_booking_app/cubit/ratings_cubit.dart';
 import 'package:futsal_booking_app/src/core/constants/string.dart';
 import 'package:futsal_booking_app/src/core/routes/app_router.dart';
-import 'package:futsal_booking_app/src/core/services/firebase_options.dart';
 import 'package:futsal_booking_app/cubit/auth_cubit.dart';
 import 'package:futsal_booking_app/service/auth_service.dart';
 import 'package:futsal_booking_app/service/field_service.dart';
@@ -16,7 +14,6 @@ import 'package:futsal_booking_app/src/core/theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const QuickSal());
 }
 

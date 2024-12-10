@@ -1,49 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:futsal_booking_app/models/field_model.dart';
+import 'package:futsal_booking_app/src/features/futsal/data/models/field_model.dart';
 
 class FutsalFieldCard extends StatelessWidget {
-  final FieldModel
-      fields; // FieldModel instance instead of individual properties
+  final FieldModel fields;
 
   const FutsalFieldCard({
     super.key,
-    required this.fields, // Accepting a FieldModel instance
+    required this.fields,
   });
 
-  // A method to create a rating display with star icons
-  Widget _buildRating(double? rating) {
-    final fullStars = rating?.floor() ?? 0;
-    final halfStars = (rating ?? 0) - fullStars > 0.0 ? 1 : 0;
-    final emptyStars = 5 - fullStars - halfStars;
+  Widget _buildRating() {
+    final fullStars = double.parse(fields.hourlyPrice).floor() % 5;
+    final emptyStars = 5 - fullStars;
 
     return Row(
       children: List.generate(
-              fullStars,
-              (index) =>
-                  const Icon(Icons.star, color: Colors.orange, size: 16)) +
+            fullStars,
+            (index) => const Icon(Icons.star, color: Colors.orange, size: 16),
+          ) +
           List.generate(
-              halfStars,
-              (index) =>
-                  const Icon(Icons.star_half, color: Colors.orange, size: 16)) +
-          List.generate(
-              emptyStars,
-              (index) => const Icon(Icons.star_border,
-                  color: Colors.orange, size: 16)),
+            emptyStars,
+            (index) =>
+                const Icon(Icons.star_border, color: Colors.orange, size: 16),
+          ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context)
-        .textTheme
-        .apply(displayColor: Theme.of(context).colorScheme.onSurface);
+    final textTheme = Theme.of(context).textTheme;
 
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
           context,
           '/details',
-          arguments: fields, // Passing the FieldModel instance to details page
+          arguments: fields, // Pass FieldModel instance to details page
         );
       },
       child: Card(
@@ -63,11 +55,23 @@ class FutsalFieldCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  fields
-                      .cardImageUrl, // Using the FieldModel instance to access properties
+                  fields.cardImg,
                   height: 140,
                   width: 120,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.image_not_supported,
+                      color: Colors.grey,
+                      size: 80,
+                    );
+                  },
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
                 ),
               ),
               const SizedBox(width: 16),
@@ -78,32 +82,39 @@ class FutsalFieldCard extends StatelessWidget {
                   children: [
                     // Name
                     Text(
-                      fields.name, // Using FieldModel to get the name
-                      style: const TextStyle(
+                      fields.name,
+                      style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
-                        // color: Colors.black87,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     // Location
                     Text(
-                      'Location: ${fields.location}', // Using FieldModel to get the location
-                      style: textTheme.bodyMedium?.copyWith(fontSize: 14),
+                      fields.location,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: Colors.grey,
+                      ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     // Ratings
-                    _buildRating(
-                        fields.ratings), // Using FieldModel to get the rating
-                    const SizedBox(height: 6),
+                    _buildRating(),
+                    const SizedBox(height: 8),
                     // Price
                     Text(
-                      'Rs. ${fields.price}/hr', // Using FieldModel to get the price
+                      'Hourly: Rs. ${fields.hourlyPrice}',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.green,
+                      ),
+                    ),
+                    Text(
+                      'Monthly: Rs. ${fields.monthlyPrice}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black87,
                       ),
                     ),
                   ],

@@ -6,7 +6,7 @@ import 'package:futsal_booking_app/src/features/booking/presentation/booking_pag
 import 'package:futsal_booking_app/src/features/futsal/presentation/detail_page.dart';
 import 'package:futsal_booking_app/src/features/futsal/presentation/home_page.dart';
 import 'package:futsal_booking_app/src/features/owner/presentation/futsal_owner_settings_page.dart';
-import '../../../models/field_model.dart';
+import '../../features/futsal/data/models/field_model.dart';
 import '../../features/futsal/presentation/main_page.dart';
 
 class AppRouter {

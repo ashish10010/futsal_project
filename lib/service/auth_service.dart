@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class AuthService {
-  final String baseUrl = 'http://192.168.100.133:3000';
+  final String baseUrl = 'http://192.168.1.68:3000';
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<void> _saveToken(String token) async {
