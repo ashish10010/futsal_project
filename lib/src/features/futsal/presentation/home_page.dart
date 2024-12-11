@@ -15,7 +15,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Fetch fields when the homepage is initialized
     context.read<FieldCubit>().fetchAllFields();
   }
 
@@ -37,15 +36,13 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 10),
             _searchBar(),
             const SizedBox(height: 20),
-            const Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Text(
-                  "Explore Futsal Fields",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+             const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                "Explore Futsal Fields",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),

@@ -1,10 +1,10 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:futsal_booking_app/src/core/constants/string.dart';
 import 'package:futsal_booking_app/src/features/auth/data/model/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class AuthService {
-  final String baseUrl = 'http://192.168.1.68:3000';
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<void> _saveTokenAndUserId(String token, String userId) async {
@@ -33,7 +33,7 @@ class AuthService {
   }) async {
     try {
       final res = await http.post(
-        Uri.parse('$baseUrl/auth/signup'),
+        Uri.parse('${AppString.baseUrl}/auth/signup'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'name': name,
@@ -48,7 +48,7 @@ class AuthService {
       }
 
       final data = jsonDecode(res.body);
-      await _saveTokenAndUserId(data['token'], data['id']); // Save token and userId
+      await _saveTokenAndUserId(data['token'], data['id']); 
 
       return UserModel.fromMap(data);
     } catch (e) {
@@ -60,7 +60,7 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    final url = Uri.parse('$baseUrl/auth/login');
+    final url = Uri.parse('${AppString.baseUrl}/auth/login');
     final response = await http.post(
       url,
       body: json.encode({'email': email, 'password': password}),
@@ -69,7 +69,7 @@ class AuthService {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
-      await _saveTokenAndUserId(data['token'], data['id']); // Save token and userId
+      await _saveTokenAndUserId(data['token'], data['id']); 
       return UserModel.fromMap(data);
     } else {
       final errorMessage =

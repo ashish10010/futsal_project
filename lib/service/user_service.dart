@@ -4,13 +4,14 @@ import 'package:futsal_booking_app/src/features/auth/data/model/user_model.dart'
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserService {
-  final String baseUrl = 'http://192.168.1.68:3000';
+import '../src/core/constants/string.dart';
 
+class UserService {
+  
   /// Retrieve the current user's details
   Future<UserModel> fetchCurrentUser() async {
     final token = await _getToken();
-    final url = Uri.parse('$baseUrl/auth/me');
+    final url = Uri.parse('${AppString.baseUrl}/auth/me');
 
     final response = await http.get(
       url,
@@ -35,7 +36,7 @@ class UserService {
     if (userId == null) {
       throw Exception('User ID not found');
     }
-    final url = Uri.parse('$baseUrl/users/$userId');
+    final url = Uri.parse('${AppString.baseUrl}/users/$userId');
 
     final response = await http.get(
       url,
@@ -57,7 +58,7 @@ class UserService {
   Future<UserModel> updateCurrentUser(Map<String, dynamic> updatedData) async {
     final token = await _getToken();
     final url =
-        Uri.parse('$baseUrl/auth/update'); // Adjusted endpoint for updates
+        Uri.parse('${AppString.baseUrl}/auth/update'); 
 
     final response = await http.put(
       url,
@@ -80,7 +81,7 @@ class UserService {
   Future<void> saveUser(UserModel user) async {
     final token = await _getToken();
     final url =
-        Uri.parse('$baseUrl/users/create'); // Adjusted to an admin endpoint
+        Uri.parse('${AppString.baseUrl}/users/create'); // Adjusted to an admin endpoint
 
     final response = await http.post(
       url,

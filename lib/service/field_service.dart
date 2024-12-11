@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../src/core/constants/string.dart';
 import '../src/features/futsal/data/models/field_model.dart';
 
 class FieldService {
-  final String baseUrl = 'http://192.168.1.68:3000';
+
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   // Retrieve the token
@@ -25,7 +26,7 @@ class FieldService {
       throw Exception('No token found. User not authenticated.');
     }
 
-    final url = Uri.parse('$baseUrl/futsal/all-futsal');
+    final url = Uri.parse('${AppString.baseUrl}/futsal/all-futsal');
     final response = await http.get(
       url,
       headers: {
@@ -49,7 +50,7 @@ class FieldService {
       throw Exception('No token found. User not authenticated.');
     }
 
-    final url = Uri.parse('$baseUrl/futsal/$futsalId');
+    final url = Uri.parse('${AppString.baseUrl}/futsal/$futsalId');
     final response = await http.get(
       url,
       headers: {
@@ -74,7 +75,7 @@ class FieldService {
       throw Exception('User not authenticated or userId missing.');
     }
 
-    final url = Uri.parse('$baseUrl/futsal/add-futsal');
+    final url = Uri.parse('${AppString.baseUrl}/futsal/add-futsal');
     final response = await http.post(
       url,
       body: json.encode({...field.toMap(), 'userId': userId}),
@@ -96,7 +97,7 @@ class FieldService {
       throw Exception('No token found. User not authenticated.');
     }
 
-    final url = Uri.parse('$baseUrl/futsal/$futsalId');
+    final url = Uri.parse('${AppString.baseUrl}/futsal/$futsalId');
     final response = await http.put(
       url,
       body: json.encode(updatedField.toMap()),
@@ -118,7 +119,7 @@ class FieldService {
       throw Exception('No token found. User not authenticated.');
     }
 
-    final url = Uri.parse('$baseUrl/futsal/$futsalId');
+    final url = Uri.parse('${AppString.baseUrl}/futsal/$futsalId');
     final response = await http.delete(
       url,
       headers: {

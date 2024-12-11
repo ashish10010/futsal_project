@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../src/core/constants/string.dart';
 import '../src/features/booking/data/booking_model.dart';
 
 class BookingService {
-  final String baseUrl = 'http://192.168.1.68:3000/booking'; 
+ 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   // Retrieve the token
@@ -32,7 +33,7 @@ class BookingService {
     }
 
     final response = await http.post(
-      Uri.parse('$baseUrl/add-booking'),
+      Uri.parse('${AppString.baseUrl}/booking/add-booking'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -62,7 +63,7 @@ class BookingService {
     }
 
     final response = await http.get(
-      Uri.parse('$baseUrl/user/$userId'), // Updated endpoint
+      Uri.parse('${AppString.baseUrl}/booking/user/$userId'), 
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -85,7 +86,7 @@ class BookingService {
     }
 
     final response = await http.get(
-      Uri.parse('$baseUrl/search/$bookingId'),
+      Uri.parse('${AppString.baseUrl}/booking/search/$bookingId'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -114,7 +115,7 @@ class BookingService {
     }
 
     final response = await http.put(
-      Uri.parse('$baseUrl/update-booking/$bookingId'),
+      Uri.parse('${AppString.baseUrl}/booking/update-booking/$bookingId'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -140,7 +141,7 @@ class BookingService {
     }
 
     final response = await http.delete(
-      Uri.parse('$baseUrl/delete-booking/$bookingId'),
+      Uri.parse('${AppString.baseUrl}/booking/delete-booking/$bookingId'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
