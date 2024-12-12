@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../cubit/auth_cubit.dart';
-import '../../booking/presentation/booking_history.dart';
-import '../../booking/presentation/currently_booked_page.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});

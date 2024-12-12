@@ -63,7 +63,7 @@ class BookingService {
     }
 
     final response = await http.get(
-      Uri.parse('${AppString.baseUrl}/booking/user/$userId'), 
+      Uri.parse('${AppString.baseUrl}/booking/all-booking'), 
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ class BookingService {
     }
 
     final response = await http.get(
-      Uri.parse('${AppString.baseUrl}/booking/search/$bookingId'),
+      Uri.parse('${AppString.baseUrl}/booking/$bookingId'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

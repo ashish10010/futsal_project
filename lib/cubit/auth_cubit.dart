@@ -69,7 +69,7 @@ class AuthCubit extends Cubit<AuthState> {
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getString('userId');
       if (userId == null) {
-        emit(AuthError('No user found'));
+        emit(const AuthError('No user found'));
         return;
       }
 

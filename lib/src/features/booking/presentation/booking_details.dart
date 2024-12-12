@@ -1,34 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:futsal_booking_app/src/core/constants/constants.dart';
+import '../../../../cubit/booking_cubit.dart';
 
 class BookedDetailsPage extends StatelessWidget {
-  const BookedDetailsPage({super.key});
+  final Map<String, dynamic> bookingData;
+
+  const BookedDetailsPage({
+    super.key,
+    required this.bookingData,
+  });
+
+  void _confirmBooking(BuildContext context) {
+    final bookingCubit = context.read<BookingCubit>();
+
+    // Extract data for booking
+    final futsalName = bookingData['futsalName'];
+    final futsalId = bookingData['futsalId'];
+    final packageType = bookingData['packageType'];
+    final price = bookingData['price'];
+    final date = bookingData['date'];
+    final time = bookingData['time'];
+
+    bookingCubit.addBooking(
+      futsalId: futsalId,
+      packageType: packageType,
+      amount: double.parse(price),
+      date: date,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Booking confirmed successfully!"),
+        backgroundColor: Colors.green,
+      ),
+    );
+
+    Navigator.popUntil(context, ModalRoute.withName('/home'));
+  }
 
   @override
   Widget build(BuildContext context) {
-    
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
-    final String futsalName = args['futsalName'];
-    final String futsalImageUrl = args['futsalImageUrl'];
-    final String fieldType = args['fieldType'];
-    final String price = args['price'];
-    final String date = args['date'];
-    final String time = args['time'];
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          futsalName,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+        title: const Text(
+          "Booking Details",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: Palette.primaryGreen,
         centerTitle: true,
-        elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -36,7 +60,7 @@ class BookedDetailsPage extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
                 child: Image.network(
-                  futsalImageUrl,
+                  bookingData['futsalImageUrl'],
                   height: 220,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -44,7 +68,7 @@ class BookedDetailsPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Details Card
+              // Booking Details
               Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
@@ -58,21 +82,37 @@ class BookedDetailsPage extends StatelessWidget {
                       _buildDetailRow(
                         iconWidget: const Icon(
                           Icons.sports_soccer,
-                          color: Colors.green,
-                          size: 24,
+                          color: Palette.primaryGreen,
                         ),
                         title: 'Futsal Name',
-                        value: futsalName,
+                        value: bookingData['futsalName'],
                       ),
                       const SizedBox(height: 12),
                       _buildDetailRow(
                         iconWidget: const Icon(
                           Icons.grass,
-                          color: Colors.green,
-                          size: 24,
+                          color: Palette.primaryGreen,
                         ),
                         title: 'Field Type',
-                        value: fieldType,
+                        value: bookingData['fieldType'],
+                      ),
+                      const SizedBox(height: 12),
+                      _buildDetailRow(
+                        iconWidget: const Icon(
+                          Icons.date_range,
+                          color: Palette.primaryGreen,
+                        ),
+                        title: 'Date',
+                        value: _formatDate(bookingData['date']),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildDetailRow(
+                        iconWidget: const Icon(
+                          Icons.access_time,
+                          color: Palette.primaryGreen,
+                        ),
+                        title: 'Time',
+                        value: bookingData['time'],
                       ),
                       const SizedBox(height: 12),
                       _buildDetailRow(
@@ -81,31 +121,11 @@ class BookedDetailsPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.green,
+                            color: Palette.primaryGreen,
                           ),
                         ),
                         title: 'Price',
-                        value: price,
-                      ),
-                      const SizedBox(height: 12),
-                      _buildDetailRow(
-                        iconWidget: const Icon(
-                          Icons.date_range,
-                          color: Colors.green,
-                          size: 24,
-                        ),
-                        title: 'Date',
-                        value: _formatDate(date),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildDetailRow(
-                        iconWidget: const Icon(
-                          Icons.access_time,
-                          color: Colors.green,
-                          size: 24,
-                        ),
-                        title: 'Time',
-                        value: time,
+                        value: 'Rs. ${bookingData['price']}',
                       ),
                     ],
                   ),
@@ -113,23 +133,23 @@ class BookedDetailsPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Booked Summary Action
+              // Confirm Booking Button
               ElevatedButton.icon(
-                onPressed: () {
-                  _showConfirmationDialog(context);
-                },
+                onPressed: () => _confirmBooking(context),
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Palette.primaryGreen,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  backgroundColor: Colors.green,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  elevation: 4,
                 ),
-                icon: const Icon(Icons.check_circle_outline, size: 24),
+                icon: const Icon(Icons.check_circle_outline),
                 label: const Text(
-                  'Confirm Booking',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  "Confirm Booking",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -150,31 +170,29 @@ class BookedDetailsPage extends StatelessWidget {
         const SizedBox(width: 12),
         Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(fontSize: 18, color: Colors.black87),
-            textAlign: TextAlign.right,
+        const Spacer(),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black54,
           ),
         ),
       ],
     );
   }
 
-  String _formatDate(String dateTime) {
-    final parsedDate = DateTime.parse(dateTime);
-    return '${parsedDate.year}-${parsedDate.month.toString().padLeft(2, '0')}-${parsedDate.day.toString().padLeft(2, '0')}';
-  }
-
-  void _showConfirmationDialog(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Booked!"),
-        duration: Duration(seconds: 2),
-      ),
-    );
+  String _formatDate(String isoDate) {
+    try {
+      final date = DateTime.parse(isoDate);
+      return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return isoDate;
+    }
   }
 }

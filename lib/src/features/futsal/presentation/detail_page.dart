@@ -182,7 +182,8 @@ class DetailPage extends StatelessWidget {
         buttonText: "Check Availability",
         onTap: () {
           Navigator.pushNamed(context, '/booking', 
-          arguments: field);
+          arguments: field,
+          );
         },
       ),
     );

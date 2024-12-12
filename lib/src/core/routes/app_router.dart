@@ -28,20 +28,30 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const HomePage());
       case '/details':
         final field = settings.arguments as FieldModel;
-        return MaterialPageRoute(builder: (_) => DetailPage(field: field));
+        return MaterialPageRoute(
+          builder: (_) => DetailPage(
+            field: field,
+          ),
+        );
       case '/booking':
         final field = settings.arguments as FieldModel;
         return MaterialPageRoute(
-            builder: (_) => ScheduleSlotsPage(
-                  field: field,
-                ));
+          builder: (_) => ScheduleSlotsPage(
+            field: field,
+          ),
+        );
       case '/bookingdetails':
-        return MaterialPageRoute(builder: (_) => const BookedDetailsPage());
+        final bookingData = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => BookedDetailsPage(
+            bookingData: bookingData,
+          ),
+        );
 
-             case '/currentlybooked':
+      case '/currentlybooked':
         return MaterialPageRoute(builder: (_) => const CurrentlyBookedPage());
 
-             case '/bookinghistory':
+      case '/bookinghistory':
         return MaterialPageRoute(builder: (_) => const BookingHistoryPage());
 
       case '/adminPanel':

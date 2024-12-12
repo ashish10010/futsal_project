@@ -7,7 +7,8 @@ import '../../../../cubit/booking_cubit.dart';
 import '../data/booking_model.dart';
 
 class ScheduleSlotsPage extends StatefulWidget {
-  final FieldModel field; // Pass the selected futsal field
+  final FieldModel field;
+// Pass the selected futsal field
 
   const ScheduleSlotsPage({
     super.key,
@@ -35,7 +36,7 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
   void initState() {
     super.initState();
     // Fetch bookings for the given futsalId
-    context.read<BookingCubit>().fetchBookingsByFutsal(widget.field.id);
+    context.read<BookingCubit>().fetchUserBookings();
   }
 
   List<BookingModel> _getBookingsForDay(
@@ -59,7 +60,7 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
       '/bookingdetails',
       arguments: {
         'futsalName': widget.field.name,
-        'futsalImageUrl': widget.field.cardImg, 
+        'futsalImageUrl': widget.field.cardImg,
         'fieldType': widget.field.courtSize,
         'price': packageType == 'Hourly'
             ? widget.field.hourlyPrice
@@ -190,7 +191,7 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
                                   ),
                                 ),
                                 child: const Text(
-                                  'Book',
+                                  'Book Hourly',
                                   style: TextStyle(color: Colors.white),
                                 ),
                               ),
