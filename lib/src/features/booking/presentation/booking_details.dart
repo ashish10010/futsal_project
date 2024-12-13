@@ -18,7 +18,7 @@ class BookedDetailsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Booking Details",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
