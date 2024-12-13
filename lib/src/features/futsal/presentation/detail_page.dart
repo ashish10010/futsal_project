@@ -24,7 +24,6 @@ class DetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final LatLng? coordinates = coordinatesMap[field.name];
 
     return Scaffold(
@@ -39,22 +38,25 @@ class DetailPage extends StatelessWidget {
         backgroundColor: Palette.primaryGreen,
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _imageCarousel(field),
-            _fieldInformation(field),
-            if (coordinates != null)
-              _fieldMap(coordinates)
-            else
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  "Location not available for this field.",
-                  style: TextStyle(color: Colors.red, fontSize: 16),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _imageCarousel(field),
+              _fieldInformation(field),
+              if (coordinates != null)
+                _fieldMap(coordinates)
+              else
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    "Location not available for this field.",
+                    style: TextStyle(color: Colors.red, fontSize: 16),
+                  ),
                 ),
-              ),
-            _availabilityButton(context, field),
-          ],
+              _availabilityButton(context, field),
+            ],
+          ),
         ),
       ),
     );
@@ -79,7 +81,7 @@ class DetailPage extends StatelessWidget {
         ),
       ],
       options: CarouselOptions(
-        height: 250,
+        height: 220,
         autoPlay: true,
         autoPlayInterval: const Duration(seconds: 3),
         enlargeCenterPage: true,
@@ -104,37 +106,51 @@ class DetailPage extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.location_pin, color: Palette.darkGreen),
+              const Icon(
+                Icons.location_pin,
+                color: Palette.darkGreen,
+              ),
               const SizedBox(width: 8),
               Text(
                 field.location,
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             "Hourly Price: Rs. ${field.hourlyPrice}",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             "Monthly Price: Rs. ${field.monthlyPrice}",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             "Court Size: ${field.courtSize}",
-            style: const TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 14),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.phone, color: Palette.primaryGreen),
+              const Icon(
+                Icons.phone,
+                color: Palette.primaryGreen,
+              ),
               const SizedBox(width: 8),
               Text(
                 "Contact: ${field.contact}",
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 14),
               ),
             ],
           ),
@@ -147,7 +163,7 @@ class DetailPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Container(
-        height: 250,
+        height: 230,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Palette.grey, width: 1),
@@ -181,8 +197,10 @@ class DetailPage extends StatelessWidget {
       child: AuthGradientButton(
         buttonText: "Check Availability",
         onTap: () {
-          Navigator.pushNamed(context, '/booking', 
-          arguments: field,
+          Navigator.pushNamed(
+            context,
+            '/booking',
+            arguments: field,
           );
         },
       ),

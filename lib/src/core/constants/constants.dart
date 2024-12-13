@@ -9,7 +9,8 @@ class Palette {
   static const Color backgroundColor = Color(0xFFF3F4F6); // Soft white background
   static const Color white = Colors.white; // Pure white
   static const Color grey = Color(0xFFB0BEC5); // Neutral grey
-  static const Color error = Colors.redAccent; // Error red
+  static const Color error = Colors.redAccent;
+  static const Color black = Colors.black87; // Error red
   static const Color transparent = Colors.transparent; // Transparent
 }
 
@@ -28,12 +29,12 @@ TextStyle subtitleTextStyle = GoogleFonts.poppins(
 
 TextStyle bodyTextStyle = GoogleFonts.poppins(
   fontSize: 14,
-  color: Palette.grey,
+  color: Palette.black,
 );
 
 TextStyle whiteTextStyle = GoogleFonts.poppins(
   fontSize: 14,
-  color: Palette.white,
+  color: Palette.grey,
 );
 
 TextStyle greenTextStyle = GoogleFonts.poppins(

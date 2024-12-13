@@ -10,8 +10,12 @@ class BookingCubit extends Cubit<BookingState> {
 
   BookingCubit(this.bookingService) : super(BookingInitial());
 
-  // Fetch all bookings for the logged-in user
+  /// Fetch all bookings for the current user
   Future<void> fetchUserBookings() async {
+    print('FETCH BOOKING IS WORKING:::::::::::::::::::::');
+    print('FETCH BOOKING IS WORKING:::::::::::::::::::::');
+    print('FETCH BOOKING IS WORKING:::::::::::::::::::::');
+
     try {
       emit(BookingLoading());
       final bookings = await bookingService.getAllBookings();
@@ -21,44 +25,45 @@ class BookingCubit extends Cubit<BookingState> {
     }
   }
 
-  // Fetch bookings for a specific futsal
+  /// Fetch all bookings for a specific futsal field (e.g., for owners)
   Future<void> fetchBookingsByFutsal(String futsalId) async {
     try {
       emit(BookingLoading());
-      final bookings = await bookingService.getBookingById(futsalId);
+      final bookings = await bookingService.getAllBookings(futsalId: futsalId);
       emit(BookingSuccess(bookings));
     } catch (e) {
       emit(BookingFailure(e.toString()));
     }
   }
 
-  // Add a new booking
+  /// Add a new booking
   Future<void> addBooking({
     required String futsalId,
     required String packageType,
-    required double amount,
+    required String amount,
     required String date,
   }) async {
     try {
       emit(BookingLoading());
-      await bookingService.createBooking(
+      await bookingService.addBooking(
         futsalId: futsalId,
         packageType: packageType,
         amount: amount,
         date: date,
       );
-      await fetchUserBookings(); // Refresh bookings after adding
+      // Refresh bookings after adding
+      await fetchBookingsByFutsal(futsalId);
     } catch (e) {
       emit(BookingFailure(e.toString()));
     }
   }
 
-  // Update an existing booking
+  /// Update an existing booking
   Future<void> updateBooking({
     required String bookingId,
     String? futsalId,
     String? packageType,
-    double? amount,
+    String? amount,
     String? date,
   }) async {
     try {
@@ -71,17 +76,19 @@ class BookingCubit extends Cubit<BookingState> {
         date: date,
       );
       await fetchUserBookings(); // Refresh bookings after updating
+      emit(const BookingUpdateSuccess("Booking Added Successfully!"));
     } catch (e) {
       emit(BookingFailure(e.toString()));
     }
   }
 
-  // Delete a booking
+  /// Delete a booking
   Future<void> deleteBooking(String bookingId) async {
     try {
       emit(BookingLoading());
       await bookingService.deleteBooking(bookingId);
       await fetchUserBookings(); // Refresh bookings after deleting
+      emit(const BookingDeleteSuccess('Booking Deleted Succcessfully!'));
     } catch (e) {
       emit(BookingFailure(e.toString()));
     }

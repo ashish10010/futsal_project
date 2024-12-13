@@ -6,7 +6,6 @@ import '../src/core/constants/string.dart';
 import '../src/features/booking/data/booking_model.dart';
 
 class BookingService {
- 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   // Retrieve the token
@@ -20,10 +19,10 @@ class BookingService {
   }
 
   // Create a new booking
-  Future<BookingModel> createBooking({
+  Future<BookingModel> addBooking({
     required String futsalId,
     required String packageType,
-    required double amount,
+    required String amount,
     required String date,
   }) async {
     final token = await _getToken();
@@ -39,40 +38,56 @@ class BookingService {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'futsalId': futsalId,
+        'futsalid': futsalId,
         'packageType': packageType,
         'amount': amount,
         'date': date,
-        'userId': userId, // Pass userId
+        'userId': userId,
       }),
     );
 
     if (response.statusCode == 201) {
-      return BookingModel.fromJson(response.body);
+      dynamic json = jsonDecode(response.body);
+      return BookingModel.fromJson(json);
     } else {
       throw Exception('Failed to create booking: ${response.body}');
     }
   }
 
-  // Get all bookings for the authenticated user
-  Future<List<BookingModel>> getAllBookings() async {
+  Future<List<BookingModel>> getAllBookings({String? futsalId}) async {
     final token = await _getToken();
     final userId = await _getUserId();
     if (token == null || userId == null) {
       throw Exception('User is not authenticated or userId missing.');
     }
 
+    //query param
+    final queryParameters = <String, String>{};
+    if (futsalId != null) {
+      queryParameters['futsalid'] = futsalId;
+    }
+
+    if (userId != null) {
+      queryParameters['userId'] = userId;
+    }
+
     final response = await http.get(
-      Uri.parse('${AppString.baseUrl}/booking/all-booking'), 
+      Uri.parse('${AppString.baseUrl}/booking/all-booking').replace(
+        queryParameters: queryParameters,
+      ),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<dynamic> bookings = jsonDecode(response.body);
-      return bookings.map((booking) => BookingModel.fromMap(booking)).toList();
+      return bookings
+          .map(
+            (e) => BookingModel.fromJson(e),
+          )
+          .toList();
     } else {
       throw Exception('Failed to fetch bookings: ${response.body}');
     }
@@ -93,9 +108,13 @@ class BookingService {
       },
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => BookingModel.fromMap(json)).toList();
+      return data
+          .map(
+            (e) => BookingModel.fromJson(e),
+          )
+          .toList();
     } else {
       throw Exception('Failed to fetch booking: ${response.body}');
     }
@@ -106,7 +125,7 @@ class BookingService {
     required String bookingId,
     String? futsalId,
     String? packageType,
-    double? amount,
+    String? amount,
     String? date,
   }) async {
     final token = await _getToken();

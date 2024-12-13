@@ -22,7 +22,7 @@ class AuthService {
 
   Future<void> _deleteTokenAndUserId() async {
     await _storage.delete(key: 'token');
-    await _storage.delete(key: 'userId');
+    // await _storage.delete(key: 'userId');
   }
 
   Future<UserModel> signUp({
