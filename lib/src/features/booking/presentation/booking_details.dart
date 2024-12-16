@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:futsal_booking_app/src/core/constants/constants.dart';
-import 'package:futsal_booking_app/src/features/booking/data/booking_model.dart';
 import '../../../../cubit/booking_cubit.dart';
 
 class BookedDetailsPage extends StatelessWidget {

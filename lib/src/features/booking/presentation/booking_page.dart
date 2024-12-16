@@ -23,24 +23,15 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
   DateTime _selectedDay = DateTime.now();
   final List<DateTime> _timeSlots = [];
 
-  // final List<String> _timeSlots = List.generate(
-  //   14,
-  //   (index) {
-  //     final startHour = 6 + index;
-  //     final endHour = startHour + 1;
-  //     return '${_formatTime(startHour)} - ${_formatTime(endHour)}';
-  //   },
-  // ); // Generates slots from 6 AM to 8 PM
-
   List<DateTime> pickSlots(DateTime baseDate) {
     _timeSlots.clear();
-    const int startHour = 6;
-    const int endHour = 19;
+    const int startHour = 6; // Start at 6 AM
+    const int endHour = 19; // End at 7 PM
 
-    // Generate DateTime objects for each hour within the range
     for (int hour = startHour; hour <= endHour; hour++) {
-      _timeSlots
-          .add(DateTime(baseDate.year, baseDate.month, baseDate.day, hour));
+      final slot = DateTime(baseDate.year, baseDate.month, baseDate.day, hour);
+      _timeSlots.add(slot);
+      print('Generated Slot: $slot'); // Debugging
     }
 
     return _timeSlots;
@@ -49,18 +40,13 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
   @override
   void initState() {
     super.initState();
-    // Fetch bookings for the given futsalId
     pickSlots(DateTime.now());
     context.read<BookingCubit>().fetchBookingsByFutsal(widget.field.id);
   }
 
-  bool isSlotOccupied(
+   bool isSlotOccupied(
       {required DateTime slot, required List<BookingModel> occupiedSlots}) {
     for (var occupied in occupiedSlots) {
-      print(
-          'DATE TIME: ${DateTime.parse(occupied.date).day}: ${slot.day} Hour: ${DateTime.parse(occupied.date).hour}: ${slot.hour}');
-
-      ///
       if (occupied.packageType.toLowerCase() == 'hourly' &&
           slot.day == DateTime.parse(occupied.date).day &&
           slot.hour == DateTime.parse(occupied.date).hour) {
@@ -77,10 +63,10 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
 
   void _navigateToBookingDetails(
     BuildContext context,
-    String slotTime,
+    DateTime slotTime,
     String packageType,
-  ) {
-    Navigator.pushNamed(
+  ) async {
+    final result = await Navigator.pushNamed(
       context,
       '/bookingdetails',
       arguments: {
@@ -91,11 +77,16 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
         'price': packageType == 'Hourly'
             ? widget.field.hourlyPrice
             : widget.field.monthlyPrice,
-        'date': '$_selectedDay',
-        'time': slotTime,
+        'date': _selectedDay.toIso8601String(),
+        'time': slotTime.toIso8601String(),
         'packageType': packageType,
       },
     );
+
+    if (result == true) {
+      context.read<BookingCubit>().fetchBookingsByFutsal(widget.field.id);
+      setState(() {});
+    }
   }
 
   @override
@@ -119,11 +110,14 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
             return const Center(child: CircularProgressIndicator());
           } else if (state is BookingSuccess) {
             final bookings = state.bookings;
+            print("Occupied slots Received from backedn: ");
+            for (var occupied in bookings) {
+              print('Date: ${occupied.date}, Package: ${occupied.packageType}');
+            }
 
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  // Calendar
                   TableCalendar(
                     firstDay: DateTime.now().subtract(const Duration(days: 30)),
                     lastDay: DateTime.now().add(const Duration(days: 30)),
@@ -162,8 +156,6 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Slots List
                   ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     shrinkWrap: true,
@@ -173,7 +165,9 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
                       final slotTime = _timeSlots[index];
 
                       final isBooked = isSlotOccupied(
-                          occupiedSlots: bookings, slot: slotTime);
+                        occupiedSlots: bookings,
+                        slot: slotTime,
+                      );
                       final int time = (slotTime.hour > 12)
                           ? slotTime.hour - 12
                           : slotTime.hour;
@@ -192,7 +186,7 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                '$isBooked $time - ${(time + 1) > 12 ? ((time + 1) - 12) : (time + 1)}',
+                                '$time - ${(time + 1) > 12 ? ((time + 1) - 12) : (time + 1)} ${slotTime.hour >= 12 ? 'PM' : 'AM'}',
                                 style: subtitleTextStyle.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -214,14 +208,11 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
                                   ElevatedButton(
                                     onPressed: isBooked
                                         ? null
-                                        : () async {
-                                            _navigateToBookingDetails(
+                                        : () => _navigateToBookingDetails(
                                               context,
-                                              '${(slotTime.hour > 12) ? 12 - slotTime.hour : slotTime.hour}',
+                                              slotTime,
                                               'Hourly',
-                                            );
-                                            setState(() {});
-                                          },
+                                            ),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: isBooked
                                           ? Colors.grey
@@ -244,7 +235,7 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
                                         ? null
                                         : () => _navigateToBookingDetails(
                                               context,
-                                              '${(slotTime.hour > 12) ? 12 - slotTime.hour : slotTime.hour}',
+                                              slotTime,
                                               'Monthly',
                                             ),
                                     style: ElevatedButton.styleFrom(
@@ -283,11 +274,5 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
         },
       ),
     );
-  }
-
-  static String _formatTime(int hour) {
-    final h = hour % 12 == 0 ? 12 : hour % 12;
-    final period = hour < 12 ? 'AM' : 'PM';
-    return '$h $period';
   }
 }

@@ -132,7 +132,7 @@ class BookingService {
     }
 
     final response = await http.put(
-      Uri.parse('${AppString.baseUrl}/booking/update-booking/$bookingId'),
+      Uri.parse('${AppString.baseUrl}/booking/$bookingId'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ class BookingService {
     }
 
     final response = await http.delete(
-      Uri.parse('${AppString.baseUrl}/booking/delete-booking/$bookingId'),
+      Uri.parse('${AppString.baseUrl}/booking/$bookingId'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

@@ -27,6 +27,9 @@ class BookingCubit extends Cubit<BookingState> {
 
   /// Fetch all bookings for a specific futsal field (e.g., for owners)
   Future<void> fetchBookingsByFutsal(String futsalId) async {
+
+         print('Fetch  BOOKING  By FutsalID IS WORKING:::::::::::::::::::::');
+
     try {
       emit(BookingLoading());
       final bookings = await bookingService.getAllBookings(futsalId: futsalId);
@@ -43,6 +46,9 @@ class BookingCubit extends Cubit<BookingState> {
     required String amount,
     required String date,
   }) async {
+
+         print('Add BOOKING IS WORKING:::::::::::::::::::::');
+
     try {
       emit(BookingLoading());
       await bookingService.addBooking(
@@ -84,6 +90,9 @@ class BookingCubit extends Cubit<BookingState> {
 
   /// Delete a booking
   Future<void> deleteBooking(String bookingId) async {
+
+     print('Delete BOOKING IS WORKING:::::::::::::::::::::');
+
     try {
       emit(BookingLoading());
       await bookingService.deleteBooking(bookingId);
