@@ -107,7 +107,6 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
 
     if (result == true) {
       context.read<BookingCubit>().fetchBookingsByFutsal(widget.field.id);
-      setState(() {});
     }
   }
 

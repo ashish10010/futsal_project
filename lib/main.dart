@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:khalti_flutter/khalti_flutter.dart';
 import 'package:futsal_booking_app/cubit/booking_cubit.dart';
 import 'package:futsal_booking_app/service/booking_service.dart';
 import 'package:futsal_booking_app/src/core/constants/constants.dart';
@@ -27,90 +28,94 @@ class QuickSal extends StatefulWidget {
 }
 
 class _QuickSalState extends State<QuickSal> {
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => NavigationCubit(),
-        ),
-        BlocProvider(
-          create: (_) => AuthCubit(
-            AuthService(),
-            UserService(),
-          ),
-        ),
-        BlocProvider(
-          create: (_) => FieldCubit(
-            FieldService(),
-          ),
-        ),
-        BlocProvider(
-          create: (_) => BookingCubit(
-            BookingService(),
-          ),
-        ),
-        BlocProvider(
-          create: (_) => RatingCubit(),
-        ),
-      ],
-      child: MaterialApp(
-        title: AppString.title,
-        debugShowCheckedModeBanner: false,
-        themeMode: themeMode,
-        theme: ThemeData(
-          scaffoldBackgroundColor: Palette.backgroundColor,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Palette.primaryGreen,
-            foregroundColor: Palette.white,
-            elevation: 0,
-          ),
-          colorScheme: const ColorScheme.light(
-            primary: Palette.primaryGreen,
-            secondary: Palette.darkGreen,
-            error: Palette.error,
-            surface: Palette.backgroundColor,
-            onSurface: Palette.grey,
-          ),
-          textTheme: TextTheme(
-            displayLarge: headlineTextStyle,
-            bodyLarge: bodyTextStyle,
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Palette.primaryGreen,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+    final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+    return KhaltiScope(
+      publicKey: '4b89ec8f746b4d8ab1fea0e610d2004e', // Replace with your real public key
+      navigatorKey: navigatorKey, // Pass the navigator key here
+      builder: (context, _) {
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => NavigationCubit()),
+            BlocProvider(
+              create: (_) => AuthCubit(AuthService(), UserService()),
+            ),
+            BlocProvider(create: (_) => FieldCubit(FieldService())),
+            BlocProvider(create: (_) => BookingCubit(BookingService())),
+            BlocProvider(create: (_) => RatingCubit()),
+          ],
+          child: MaterialApp(
+            title: AppString.title,
+            debugShowCheckedModeBanner: false,
+            navigatorKey: navigatorKey, // Pass the same navigatorKey to MaterialApp
+            themeMode: themeMode,
+            theme: ThemeData(
+              scaffoldBackgroundColor: Palette.backgroundColor,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Palette.primaryGreen,
+                foregroundColor: Palette.white,
+                elevation: 0,
               ),
-              textStyle: whiteTextStyle,
+              colorScheme: const ColorScheme.light(
+                primary: Palette.primaryGreen,
+                secondary: Palette.darkGreen,
+                error: Palette.error,
+                surface: Palette.backgroundColor,
+                onSurface: Palette.grey,
+              ),
+              textTheme: TextTheme(
+                displayLarge: headlineTextStyle,
+                bodyLarge: bodyTextStyle,
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Palette.primaryGreen,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  textStyle: whiteTextStyle,
+                ),
+              ),
+              inputDecorationTheme: InputDecorationTheme(
+                contentPadding: const EdgeInsets.all(27),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Palette.darkGreen),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(
+                    color: Palette.primaryGreen,
+                    width: 2,
+                  ),
+                ),
+              ),
             ),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            contentPadding: const EdgeInsets.all(27),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Palette.darkGreen),
+            darkTheme: ThemeData(
+              scaffoldBackgroundColor: Palette.backgroundColor,
+              colorScheme: const ColorScheme.dark(
+                primary: Palette.primaryGreen,
+                secondary: Palette.darkGreen,
+                error: Palette.error,
+                surface: Palette.backgroundColor,
+                onSurface: Palette.white,
+              ),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide:
-                  const BorderSide(color: Palette.primaryGreen, width: 2),
-            ),
+            initialRoute: '/',
+            onGenerateRoute: AppRouter.route,
+            localizationsDelegates: const [
+              KhaltiLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', 'US'),
+              Locale('ne', 'NP'),
+            ],
           ),
-        ),
-        darkTheme: ThemeData(
-          scaffoldBackgroundColor: Palette.backgroundColor,
-          colorScheme: const ColorScheme.dark(
-            primary: Palette.primaryGreen,
-            secondary: Palette.darkGreen,
-            error: Palette.error,
-            surface: Palette.backgroundColor,
-            onSurface: Palette.white,
-          ),
-        ),
-        initialRoute: '/',
-        onGenerateRoute: AppRouter.route,
-      ),
+        );
+      },
     );
   }
 }

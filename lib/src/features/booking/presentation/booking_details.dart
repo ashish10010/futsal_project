@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:futsal_booking_app/cubit/booking_cubit.dart';
 import 'package:futsal_booking_app/src/core/constants/constants.dart';
+import 'package:khalti_flutter/khalti_flutter.dart';
 
 class BookingDetailsPage extends StatelessWidget {
   final Map<String, dynamic> bookingData;
@@ -10,6 +11,75 @@ class BookingDetailsPage extends StatelessWidget {
     super.key,
     required this.bookingData,
   });
+
+  //initiate Khalti Payment
+  void _initiatePayment(BuildContext context, BookingCubit bookingCubit) {
+
+    print('Proceed to Pay Button Clicked'); // Debugging
+
+    KhaltiScope.of(context).pay(
+      config: PaymentConfig(
+        amount: int.parse(bookingData['price']) * 100, // Amount in paisa
+        productIdentity: bookingData['futsalId'],
+        productName: bookingData['futsalName'],
+      ),
+      preferences: [
+        PaymentPreference.khalti,
+      ],
+      onSuccess: (PaymentSuccessModel success) async {
+        // On Payment Success
+        Navigator.pop(context); // Close loading dialog
+        await _confirmBooking(context, bookingCubit);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Payment Successful! Booking Created.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      },
+      onFailure: (failure) {
+        // On Payment Failure
+        Navigator.pop(context); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Payment Failed: ${failure.message}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      },
+      onCancel: () {
+        // On Payment Cancellation
+        Navigator.pop(context); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Payment Cancelled'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      },
+    );
+  }
+
+  /// Function to Confirm Booking After Successful Payment
+  Future<void> _confirmBooking(
+      BuildContext context, BookingCubit bookingCubit) async {
+    try {
+      await bookingCubit.addBooking(
+        futsalId: bookingData['futsalId'],
+        packageType: bookingData['packageType'],
+        amount: bookingData['price'].toString(),
+        date: bookingData['date'],
+      );
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to Confirm Booking: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,39 +170,8 @@ class BookingDetailsPage extends StatelessWidget {
 
             // Confirm Booking Button
             ElevatedButton(
-              onPressed: () async {
-                try {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (_) => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                  await bookingCubit.addBooking(
-                    futsalId: bookingData['futsalId'],
-                    packageType: bookingData['packageType'],
-                    amount: bookingData['price'].toString(),
-                    date: bookingData['date'],
-                  );
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Booking Confirmed Successfuly!'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                } catch (e) {
-                  Navigator.of(context).pop();
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Failed to Confirm Booking!: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
+              onPressed: () {
+                _initiatePayment(context, bookingCubit);
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
@@ -143,7 +182,7 @@ class BookingDetailsPage extends StatelessWidget {
                 elevation: 4,
               ),
               child: const Text(
-                'Confirm Booking',
+                'Proceed To Pay',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
