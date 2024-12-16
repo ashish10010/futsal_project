@@ -20,9 +20,11 @@ class ScheduleSlotsPage extends StatefulWidget {
 
 class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
   final List<DateTime> _timeSlots = [];
 
+  /// Generates hourly slots (6 AM - 7 PM) for the selected day
   List<DateTime> pickSlots(DateTime baseDate) {
     _timeSlots.clear();
     const int startHour = 6; // Start at 6 AM
@@ -31,9 +33,7 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
     for (int hour = startHour; hour <= endHour; hour++) {
       final slot = DateTime(baseDate.year, baseDate.month, baseDate.day, hour);
       _timeSlots.add(slot);
-      print('Generated Slot: $slot'); // Debugging
     }
-
     return _timeSlots;
   }
 
@@ -44,17 +44,20 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
     context.read<BookingCubit>().fetchBookingsByFutsal(widget.field.id);
   }
 
-   bool isSlotOccupied(
-      {required DateTime slot, required List<BookingModel> occupiedSlots}) {
+  /// Checks if a specific time slot is booked
+  bool isSlotOccupied({
+    required DateTime slot,
+    required List<BookingModel> occupiedSlots,
+  }) {
     for (var occupied in occupiedSlots) {
+      final occupiedDateTime = DateTime.parse(occupied.date);
       if (occupied.packageType.toLowerCase() == 'hourly' &&
-          slot.day == DateTime.parse(occupied.date).day &&
-          slot.hour == DateTime.parse(occupied.date).hour) {
+          slot.day == occupiedDateTime.day &&
+          slot.hour == occupiedDateTime.hour) {
         return true;
       } else if (occupied.packageType.toLowerCase() == 'monthly' &&
-          slot.month == DateTime.parse(occupied.date).month &&
-          slot.day == DateTime.parse(occupied.date).day &&
-          slot.hour == DateTime.parse(occupied.date).hour) {
+          slot.month == occupiedDateTime.month &&
+          slot.hour == occupiedDateTime.hour) {
         return true;
       }
     }
@@ -66,6 +69,25 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
     DateTime slotTime,
     String packageType,
   ) async {
+    List<DateTime> monthlySlots = [];
+
+    if (packageType == 'Monthly') {
+      final int selectedHour = slotTime.hour;
+      final startDay = _selectedDay;
+      final lastDayOfMonth = DateTime(startDay.year, startDay.month + 1, 0);
+
+      for (int day = startDay.day; day <= lastDayOfMonth.day; day++) {
+        monthlySlots
+            .add(DateTime(startDay.year, startDay.month, day, selectedHour));
+      }
+    }
+    final combinedDateTime = DateTime(
+      _selectedDay.year,
+      _selectedDay.month,
+      _selectedDay.day,
+      slotTime.hour,
+    );
+
     final result = await Navigator.pushNamed(
       context,
       '/bookingdetails',
@@ -77,8 +99,10 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
         'price': packageType == 'Hourly'
             ? widget.field.hourlyPrice
             : widget.field.monthlyPrice,
-        'date': _selectedDay.toIso8601String(),
-        'time': slotTime.toIso8601String(),
+        'date': packageType == 'Hourly'
+            ? combinedDateTime.toIso8601String()
+            : monthlySlots.map((date) => date.toIso8601String()).toList(),
+        'time': slotTime.hour,
         'packageType': packageType,
       },
     );
@@ -110,24 +134,22 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
             return const Center(child: CircularProgressIndicator());
           } else if (state is BookingSuccess) {
             final bookings = state.bookings;
-            print("Occupied slots Received from backedn: ");
-            for (var occupied in bookings) {
-              print('Date: ${occupied.date}, Package: ${occupied.packageType}');
-            }
 
             return SingleChildScrollView(
               child: Column(
                 children: [
+                  // Calendar Widget
                   TableCalendar(
-                    firstDay: DateTime.now().subtract(const Duration(days: 30)),
-                    lastDay: DateTime.now().add(const Duration(days: 30)),
-                    focusedDay: _selectedDay,
+                    firstDay: DateTime.now(),
+                    lastDay: DateTime.now().add(const Duration(days: 365)),
+                    focusedDay: _focusedDay,
                     calendarFormat: _calendarFormat,
                     selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                     onDaySelected: (selectedDay, focusedDay) {
                       setState(() {
-                        pickSlots(selectedDay);
                         _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
+                        pickSlots(selectedDay);
                       });
                     },
                     onFormatChanged: (format) {
@@ -141,21 +163,36 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
                         shape: BoxShape.circle,
                       ),
                       todayDecoration: BoxDecoration(
-                        color: Palette.lightGreen.withOpacity(0.5),
+                        color: Palette.lightGreen.withOpacity(0.7),
                         shape: BoxShape.circle,
+                      ),
+                      defaultTextStyle: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      disabledTextStyle: const TextStyle(
+                        color: Colors.grey,
                       ),
                       outsideDaysVisible: false,
                     ),
-                    headerStyle: HeaderStyle(
+                    headerStyle: const HeaderStyle(
                       formatButtonVisible: false,
                       titleCentered: true,
-                      titleTextStyle: headlineTextStyle.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                      titleTextStyle: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
+                      leftChevronIcon:
+                          Icon(Icons.chevron_left, color: Colors.black),
+                      rightChevronIcon:
+                          Icon(Icons.chevron_right, color: Colors.black),
                     ),
                   ),
+
                   const SizedBox(height: 16),
+
+                  // Slots List
                   ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     shrinkWrap: true,
@@ -163,14 +200,11 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
                     itemCount: _timeSlots.length,
                     itemBuilder: (context, index) {
                       final slotTime = _timeSlots[index];
-
                       final isBooked = isSlotOccupied(
                         occupiedSlots: bookings,
                         slot: slotTime,
                       );
-                      final int time = (slotTime.hour > 12)
-                          ? slotTime.hour - 12
-                          : slotTime.hour;
+
                       return Card(
                         margin: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -179,14 +213,14 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        elevation: 2,
+                        elevation: 3,
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                '$time - ${(time + 1) > 12 ? ((time + 1) - 12) : (time + 1)} ${slotTime.hour >= 12 ? 'PM' : 'AM'}',
+                                '${_formatTime(slotTime.hour)} - ${_formatTime(slotTime.hour + 1)}',
                                 style: subtitleTextStyle.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -217,13 +251,6 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
                                       backgroundColor: isBooked
                                           ? Colors.grey
                                           : Palette.primaryGreen,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                        horizontal: 16,
-                                      ),
                                     ),
                                     child: const Text(
                                       'Book Hourly',
@@ -242,13 +269,6 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
                                       backgroundColor: isBooked
                                           ? Colors.grey
                                           : Palette.primaryGreen,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                        horizontal: 16,
-                                      ),
                                     ),
                                     child: const Text(
                                       'Book Monthly',
@@ -274,5 +294,11 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
         },
       ),
     );
+  }
+
+  static String _formatTime(int hour) {
+    final h = hour % 12 == 0 ? 12 : hour % 12;
+    final period = hour < 12 ? 'AM' : 'PM';
+    return '$h $period';
   }
 }

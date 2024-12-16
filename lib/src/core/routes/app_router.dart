@@ -43,7 +43,7 @@ class AppRouter {
       case '/bookingdetails':
         final bookingData = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => BookedDetailsPage(
+          builder: (_) => BookingDetailsPage(
             bookingData: bookingData,
           ),
         );

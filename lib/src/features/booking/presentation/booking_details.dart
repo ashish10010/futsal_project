@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:futsal_booking_app/cubit/booking_cubit.dart';
 import 'package:futsal_booking_app/src/core/constants/constants.dart';
-import '../../../../cubit/booking_cubit.dart';
 
-class BookedDetailsPage extends StatelessWidget {
+class BookingDetailsPage extends StatelessWidget {
   final Map<String, dynamic> bookingData;
 
-  const BookedDetailsPage({
+  const BookingDetailsPage({
     super.key,
     required this.bookingData,
   });
@@ -14,6 +14,16 @@ class BookedDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bookingCubit = context.read<BookingCubit>();
+    // Parse the date and time
+    final DateTime selectedDate = DateTime.parse(bookingData['date']);
+    final int selectedTimeHour = bookingData['time'];
+
+    // Format date as "YYYY-MM-DD"
+    String formattedDate =
+        "${selectedDate.year}-${_padZero(selectedDate.month)}-${_padZero(selectedDate.day)}";
+
+    // Format time as "6 AM", "7 PM", etc.
+    String formattedTime = _formatTime(selectedTimeHour);
 
     return Scaffold(
       appBar: AppBar(
@@ -38,22 +48,6 @@ class BookedDetailsPage extends StatelessWidget {
                 height: 220,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              (loadingProgress.expectedTotalBytes ?? 1)
-                          : null,
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) => const Icon(
-                  Icons.broken_image,
-                  size: 100,
-                  color: Colors.grey,
-                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -69,40 +63,30 @@ class BookedDetailsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Futsal Name
                     _buildDetailRow(
                       icon: Icons.sports_soccer,
-                      // label: 'Futsal Name',
-                      label: '${DateTime.parse(bookingData['date'])}',
+                      label: 'Futsal Name',
                       value: bookingData['futsalName'],
                     ),
                     const SizedBox(height: 12),
-
-                    // Field Type
                     _buildDetailRow(
                       icon: Icons.grass,
                       label: 'Field Type',
                       value: bookingData['fieldType'],
                     ),
                     const SizedBox(height: 12),
-
-                    // Date
                     _buildDetailRow(
                       icon: Icons.date_range,
                       label: 'Date',
-                      value: bookingData['date'], // Format the date
+                      value: formattedDate, // Only the formatted date
                     ),
                     const SizedBox(height: 12),
-
-                    // Time
                     _buildDetailRow(
                       icon: Icons.access_time,
                       label: 'Time',
-                      value: bookingData['time'],
+                      value: formattedTime, // Only the formatted time
                     ),
                     const SizedBox(height: 12),
-
-                    // Price
                     _buildDetailRow(
                       icon: Icons.monetization_on,
                       label: 'Price',
@@ -118,7 +102,6 @@ class BookedDetailsPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 try {
-                  // Show loading indicator
                   showDialog(
                     context: context,
                     barrierDismissible: false,
@@ -126,30 +109,26 @@ class BookedDetailsPage extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     ),
                   );
-
-                  // Make API call to create booking
                   await bookingCubit.addBooking(
                     futsalId: bookingData['futsalId'],
                     packageType: bookingData['packageType'],
                     amount: bookingData['price'].toString(),
                     date: bookingData['date'],
                   );
-                  Navigator.of(context).pop(); // Close the loading indicator
-
+                  Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text("Booking confirmed successfully!"),
+                      content: Text('Booking Confirmed Successfuly!'),
                       backgroundColor: Colors.green,
                     ),
                   );
-
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 } catch (e) {
-                  Navigator.of(context).pop(); // Close the loading indicator
+                  Navigator.of(context).pop();
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("Failed to confirm booking: $e"),
+                      content: Text('Failed to Confirm Booking!: $e'),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -166,9 +145,10 @@ class BookedDetailsPage extends StatelessWidget {
               child: const Text(
                 'Confirm Booking',
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
@@ -177,7 +157,7 @@ class BookedDetailsPage extends StatelessWidget {
     );
   }
 
-  // Helper Widget to Build Detail Rows
+  /// Helper Widget to Build Detail Rows
   Widget _buildDetailRow({
     required IconData icon,
     required String label,
@@ -188,17 +168,28 @@ class BookedDetailsPage extends StatelessWidget {
       children: [
         Icon(icon, color: Palette.primaryGreen, size: 24),
         const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
+        const Spacer(),
         Text(
           value,
           style: const TextStyle(fontSize: 16, color: Colors.black87),
         ),
       ],
     );
+  }
+
+  /// Helper method to format time to 12-hour format (6 AM, 7 PM, etc.)
+  String _formatTime(int hour) {
+    final h = hour % 12 == 0 ? 12 : hour % 12;
+    final period = hour < 12 ? 'AM' : 'PM';
+    return '$h $period';
+  }
+
+  /// Pad zero to single digit months or days
+  String _padZero(int value) {
+    return value < 10 ? '0$value' : '$value';
   }
 }
