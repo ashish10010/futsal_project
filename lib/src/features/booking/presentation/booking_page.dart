@@ -71,7 +71,7 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
   ) async {
     List<DateTime> monthlySlots = [];
 
-    if (packageType == 'Monthly') {
+    if (packageType.toLowerCase() == 'monthly') {
       final int selectedHour = slotTime.hour;
       final startDay = _selectedDay;
       final lastDayOfMonth = DateTime(startDay.year, startDay.month + 1, 0);
@@ -96,12 +96,10 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
         'futsalName': widget.field.name,
         'futsalImageUrl': widget.field.cardImg,
         'fieldType': widget.field.courtSize,
-        'price': packageType == 'Hourly'
+        'price': packageType.toLowerCase() == 'hourly'
             ? widget.field.hourlyPrice
             : widget.field.monthlyPrice,
-        'date': packageType == 'Hourly'
-            ? combinedDateTime.toIso8601String()
-            : monthlySlots.map((date) => date.toIso8601String()).toList(),
+        'date': combinedDateTime.toString(),
         'time': slotTime.hour,
         'packageType': packageType,
       },

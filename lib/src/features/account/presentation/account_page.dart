@@ -25,8 +25,10 @@ class _AccountPageState extends State<AccountPage> {
           UserHeader(
             name: user.name,
             email: user.email,
-            avatarUrl: "https://via.placeholder.com/150",
+            avatarAsset:
+                'assets/images/defaultPic.jpg', // Replace with your actual asset path
           ),
+
           const SizedBox(height: 20),
 
           SettingsSection(
@@ -69,13 +71,14 @@ class _AccountPageState extends State<AccountPage> {
                 title: "FAQs",
                 icon: Icons.help_outline,
                 onTap: () {
-                  // Add navigation logic for FAQs
+                  Navigator.pushNamed(context, '/faqs');
                 },
               ),
               SettingsListTile(
                 title: "About Us",
                 icon: Icons.info_outline,
                 onTap: () {
+                  Navigator.pushNamed(context, '/aboutUs');
                   // Add navigation logic for About Us
                 },
               ),
@@ -185,22 +188,30 @@ class _AccountPageState extends State<AccountPage> {
 class UserHeader extends StatelessWidget {
   final String name;
   final String email;
-  final String avatarUrl;
+  final String avatarAsset;
 
   const UserHeader({
     super.key,
     required this.name,
     required this.email,
-    required this.avatarUrl,
+    required this.avatarAsset,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundImage: NetworkImage(avatarUrl),
+        ClipOval(
+          child: Container(
+            width: 80, // Diameter of the circle
+            height: 80,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(avatarAsset),
+                fit: BoxFit.cover, // Ensures the image covers the entire circle
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 12),
         Text(

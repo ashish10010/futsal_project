@@ -16,7 +16,6 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  String? selectedRole;
 
   @override
   void dispose() {
@@ -24,6 +23,27 @@ class _SignUpPageState extends State<SignUpPage> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  /// Infers the role based on the email address.
+  String _getRoleFromEmail(String email) {
+    if (email.endsWith('@admin.com')) {
+      return 'admin';
+    } else if (email.endsWith('@owner.com')) {
+      return 'owner';
+    }
+    return 'user'; // Default role
+  }
+
+  /// Validates the role and ensures it's correctly inferred.
+  String? _validateRole(String email) {
+    final role = _getRoleFromEmail(email);
+    if (role == 'admin' && !email.endsWith('@admin.com')) {
+      return 'Invalid Admin email';
+    } else if (role == 'owner' && !email.endsWith('@owner.com')) {
+      return 'Invalid Owner email';
+    }
+    return null; // Valid role
   }
 
   @override
@@ -73,7 +93,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         .hasMatch(value)) {
                       return 'Enter a valid email';
                     }
-                    return null;
+                    // Validate role based on email
+                    return _validateRole(value);
                   },
                 ),
                 const SizedBox(height: 16),
@@ -91,59 +112,15 @@ class _SignUpPageState extends State<SignUpPage> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
-                // Dropdown for Role Selection
-                DropdownButtonFormField<String>(
-                  value: selectedRole,
-                  decoration: InputDecoration(
-                    labelText: 'Select Role',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'user',
-                      child: Text(
-                        'User',
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      value: 'owner',
-                      child: Text(
-                        'Futsal Owner',
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      value: 'admin',
-                      child: Text(
-                        'Admin',
-                      ),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedRole = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please select a role';
-                    }
-                    return null;
-                  },
-                ),
                 const SizedBox(height: 24),
                 BlocConsumer<AuthCubit, AuthState>(
                   listener: (context, state) {
-                    if (state is AuthSignUp)
-                     { 
+                    if (state is AuthSignUp) {
                       Navigator.pushReplacementNamed(context, '/login');
-                    } else if (state is AuthError)
-                    {
+                    } else if (state is AuthError) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.error)),
-                    );
+                        SnackBar(content: Text(state.error)),
+                      );
                     }
                   },
                   builder: (context, state) {
@@ -154,12 +131,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       buttonText: 'Sign Up',
                       onTap: () {
                         if (_formKey.currentState!.validate()) {
-                          // Pass the selected role along with other details
+                          // Infer role from email
+                          final role =
+                              _getRoleFromEmail(emailController.text.trim());
                           context.read<AuthCubit>().signUp(
                                 name: nameController.text.trim(),
                                 email: emailController.text.trim(),
                                 password: passwordController.text.trim(),
-                                role: selectedRole!, // Add the selected role
+                                role: role,
                               );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(

@@ -13,7 +13,7 @@ class DetailPage extends StatelessWidget {
     required this.field,
   });
 
-  // Predefined map of field names (or IDs) to their latitude and longitude
+  
   static final Map<String, LatLng> coordinatesMap = {
     "ABC Futsal": const LatLng(28.235454, 83.989304),
     "Chin Futsal": const LatLng(28.251275, 83.985669),

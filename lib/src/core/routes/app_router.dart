@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:futsal_booking_app/src/features/account/presentation/aboutUs.dart';
+import 'package:futsal_booking_app/src/features/account/presentation/faqs.dart';
 import 'package:futsal_booking_app/src/features/booking/presentation/booking_details.dart';
 import 'package:futsal_booking_app/src/features/booking/presentation/booking_history.dart';
 import 'package:futsal_booking_app/src/features/booking/presentation/currently_booked_page.dart';
@@ -59,7 +61,10 @@ class AppRouter {
       case '/ownerDashboard':
         return MaterialPageRoute(
             builder: (_) => const FutsalOwnerSettingsPage());
-
+      case '/faqs':
+        return MaterialPageRoute(builder: (_) => const FaqsPage());
+      case '/aboutUs':
+        return MaterialPageRoute(builder: (_) => const AboutUsPage());
       default:
         return MaterialPageRoute(builder: (_) => const InvalidPage());
     }
