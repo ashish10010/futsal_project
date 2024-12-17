@@ -19,7 +19,7 @@ class BookingDetailsPage extends StatelessWidget {
 
     KhaltiScope.of(context).pay(
       config: PaymentConfig(
-        amount: int.parse(bookingData['price']) * 100, // Amount in paisa
+        amount: 1000, // Amount in paisa
         productIdentity: bookingData['futsalId'],
         productName: bookingData['futsalName'],
       ),

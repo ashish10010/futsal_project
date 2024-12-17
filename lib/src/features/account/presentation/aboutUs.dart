@@ -163,7 +163,7 @@ class AboutUsPage extends StatelessWidget {
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

@@ -88,7 +88,7 @@ class _FaqsContentState extends State<FaqsContent> {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
-        ..._faqItems.map((faq) => _buildFaqTile(faq)).toList(),
+        ..._faqItems.map((faq) => _buildFaqTile(faq)),
         const SizedBox(height: 24),
         Center(
           child: InkWell(

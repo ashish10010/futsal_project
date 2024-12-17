@@ -34,7 +34,7 @@ class _QuickSalState extends State<QuickSal> {
   Widget build(BuildContext context) {
     final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
     return KhaltiScope(
-      publicKey: '4b89ec8f746b4d8ab1fea0e610d2004e', // Replace with your real public key
+      publicKey: "test_public_key_d5d9f63743584dc38753056b0cc737d5", // key
       navigatorKey: navigatorKey, // Pass the navigator key here
       builder: (context, _) {
         return MultiBlocProvider(
