@@ -53,13 +53,13 @@ class _AccountPageState extends State<AccountPage> {
                   Navigator.pushNamed(context, '/currentlybooked');
                 },
               ),
-              SettingsListTile(
-                title: "Booking History",
-                icon: Icons.history,
-                onTap: () {
-                  Navigator.pushNamed(context, '/bookinghistory');
-                },
-              ),
+              // SettingsListTile(
+              //   title: "Booking History",
+              //   icon: Icons.history,
+              //   onTap: () {
+              //     Navigator.pushNamed(context, '/bookinghistory');
+              //   },
+              // ),
             ],
           ),
 

@@ -9,14 +9,12 @@ class FieldService {
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  // Retrieve the token
   Future<String?> _getToken() async {
     return await _storage.read(key: 'token');
   }
 
-  // Retrieve the userId from storage
   Future<String?> _getUserId() async {
-    return await _storage.read(key: 'userId'); // Ensure `userId` is saved during login
+    return await _storage.read(key: 'userId'); 
   }
 
   // Fetch all futsal fields

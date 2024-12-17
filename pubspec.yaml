@@ -36,6 +36,7 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.1.6
   flutter_secure_storage: ^9.2.2
+  geolocator: ^13.0.2
   google_fonts: ^6.2.1
   google_maps_flutter: ^2.10.0
   http: ^1.2.2
@@ -43,6 +44,7 @@ dependencies:
   intl: ^0.18.0
   khalti: ^2.0.0
   khalti_flutter: ^3.0.0
+  latlong2: ^0.9.1
   shared_preferences: ^2.3.3
   table_calendar: ^3.0.9
 

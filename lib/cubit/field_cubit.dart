@@ -36,15 +36,15 @@ class FieldCubit extends Cubit<FieldState> {
   }
 
   // Fetch fields added by the logged-in owner
-  Future<void> fetchFieldsByOwner() async {
-    try {
-      emit(FieldLoading());
-      final fields = await fieldService.fetchAllFields(); // Assuming all fields are fetched and filtered by `userId`
-      emit(FieldSuccess(fields.where((field) => field.userId == 'YOUR_USER_ID').toList()));
-    } catch (e) {
-      emit(FieldFailure(e.toString()));
-    }
-  }
+  // Future<void> fetchFieldsByOwner() async {
+  //   try {
+  //     emit(FieldLoading());
+  //     final fields = await fieldService.fetchAllFields(); // Assuming all fields are fetched and filtered by `userId`
+  //     emit(FieldSuccess(fields.where((field) => field.userId == 'YOUR_USER_ID').toList()));
+  //   } catch (e) {
+  //     emit(FieldFailure(e.toString()));
+  //   }
+  // }
 
   // Add a new field
   Future<void> addField(FieldModel field) async {

@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:futsal_booking_app/src/features/account/presentation/aboutUs.dart';
 import 'package:futsal_booking_app/src/features/account/presentation/faqs.dart';
 import 'package:futsal_booking_app/src/features/booking/presentation/booking_details.dart';
-import 'package:futsal_booking_app/src/features/booking/presentation/booking_history.dart';
 import 'package:futsal_booking_app/src/features/booking/presentation/currently_booked_page.dart';
+import 'package:futsal_booking_app/src/features/owner/presentation/owner_main_page.dart';
 import '../../features/admin/presentation/admin_panel.dart';
 import '../../features/auth/presentation/pages/login/login_page.dart';
 import '../../features/auth/presentation/pages/register/sign_up_page.dart';
 import '../../features/booking/presentation/booking_page.dart';
 import '../../features/futsal/presentation/detail_page.dart';
 import '../../features/futsal/presentation/home_page.dart';
-import '../../features/owner/presentation/futsal_owner_settings_page.dart';
+import '../../features/map/google_map.dart' show NearbyFutsalMap;
 import '../../features/futsal/data/models/field_model.dart';
 import '../../features/futsal/presentation/main_page.dart';
 import '../../features/splash/splash_page.dart';
@@ -53,14 +53,14 @@ class AppRouter {
       case '/currentlybooked':
         return MaterialPageRoute(builder: (_) => const CurrentlyBookedPage());
 
-      case '/bookinghistory':
-        return MaterialPageRoute(builder: (_) => const BookingHistoryPage());
+      case '/map':
+        return MaterialPageRoute(builder: (_) => const NearbyFutsalMap());
 
       case '/adminPanel':
         return MaterialPageRoute(builder: (_) => const AdminDashboard());
       case '/ownerDashboard':
         return MaterialPageRoute(
-            builder: (_) => const FutsalOwnerSettingsPage());
+            builder: (_) => const OwnerMainPage());
       case '/faqs':
         return MaterialPageRoute(builder: (_) => const FaqsPage());
       case '/aboutUs':

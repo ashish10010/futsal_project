@@ -34,9 +34,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             _headerSection(),
             const SizedBox(height: 10),
-            _searchBar(),
-            const SizedBox(height: 20),
-             const Padding(
+            const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 "Explore Futsal Fields",
@@ -106,26 +104,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _searchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: "Search futsal fields...",
-          hintStyle: bodyTextStyle.copyWith(color: Palette.grey),
-          prefixIcon: const Icon(Icons.search, color: Palette.primaryGreen),
-          filled: true,
-          fillColor: Palette.lightGreen.withOpacity(0.2),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
-            borderSide: BorderSide.none,
-          ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 10),
-        ),
       ),
     );
   }
