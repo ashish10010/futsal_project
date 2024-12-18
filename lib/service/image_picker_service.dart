@@ -6,7 +6,7 @@ class ImagePickerService {
 
   
   Future<List<File>> pickMultipleImages(int count) async {
-    final List<XFile>? pickedFiles = await _picker.pickMultiImage();
+    final List<XFile> pickedFiles = await _picker.pickMultiImage();
 
     if (pickedFiles != null) {
       

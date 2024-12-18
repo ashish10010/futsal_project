@@ -41,11 +41,13 @@ dependencies:
   google_fonts: ^6.2.1
   google_maps_flutter: ^2.10.0
   http: ^1.2.2
+  http_parser: ^4.0.2
   image_picker: ^1.1.2
   intl: ^0.18.0
   khalti: ^2.0.0
   khalti_flutter: ^3.0.0
   latlong2: ^0.9.1
+  logger: ^2.5.0
   shared_preferences: ^2.3.3
   table_calendar: ^3.0.9
 

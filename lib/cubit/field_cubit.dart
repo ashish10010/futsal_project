@@ -1,14 +1,17 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:futsal_booking_app/src/features/futsal/data/models/field_model.dart';
+import 'package:logger/logger.dart';
 
 import '../service/field_service.dart';
 
 part 'field_state.dart';
 
 class FieldCubit extends Cubit<FieldState> {
-  final FieldService fieldService;
+  
+  final _logger = Logger();
 
+  final FieldService fieldService;
 
   FieldCubit(this.fieldService) : super(FieldInitial());
 
@@ -41,7 +44,7 @@ class FieldCubit extends Cubit<FieldState> {
   Future<void> fetchFieldsByOwner() async {
     try {
       emit(FieldLoading());
-          final userId = await fieldService.getUserId(); 
+      final userId = await fieldService.getUserId();
       if (userId != null) {
         final fields = await fieldService.fetchAllFields();
         final ownerFields =
@@ -57,10 +60,27 @@ class FieldCubit extends Cubit<FieldState> {
 
   // Add a new field
   Future<void> addField(FieldModel field) async {
+    _logger.e('This is working:::::::::');
     try {
       emit(FieldLoading());
-      await fieldService.addFutsal(field);
-      await fetchAllFields(); // Refresh fields after adding
+      _logger.e('This tryyy is working:::::::::');
+
+      final userid = await fieldService.getUserId();
+
+      await fieldService.addFutsal(
+        name: field.name,
+        email: field.email,
+        location: field.location,
+        cardImg: field.cardImg,
+        img1: field.img1,
+        img2: field.img2,
+        hourlyPrice: field.hourlyPrice,
+        monthlyPrice: field.monthlyPrice,
+        contact: field.contact,
+        courtSize: field.courtSize,
+        userId: userid!,
+      );
+      await fetchAllFields();
     } catch (e) {
       emit(FieldFailure(e.toString()));
     }

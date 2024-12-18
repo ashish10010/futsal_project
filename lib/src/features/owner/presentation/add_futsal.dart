@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:futsal_booking_app/service/auth_service.dart';
-import 'package:futsal_booking_app/service/cloud_storage_service.dart';
-import 'package:futsal_booking_app/service/image_picker_service.dart';
-import 'package:futsal_booking_app/cubit/field_cubit.dart';
-import 'package:futsal_booking_app/src/features/futsal/data/models/field_model.dart';
+import 'package:futsal_booking_app/service/field_service.dart';
+import '../../../core/constants/images.dart';
 
 class AddFutsal extends StatefulWidget {
   const AddFutsal({super.key});
@@ -16,67 +15,74 @@ class AddFutsal extends StatefulWidget {
 
 class _AddFutsalState extends State<AddFutsal> {
   final _formKey = GlobalKey<FormState>();
+  final Logger _logger = Logger();
 
+  // Controllers
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController hourlyPriceController = TextEditingController();
   final TextEditingController monthlyPriceController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
 
   String? selectedCourtSize;
-  final ImagePickerService _imagePickerService = ImagePickerService();
-  final CloudStorageService _cloudStorageService = CloudStorageService();
-
-  List<File> selectedImages = [];
   bool isLoading = false;
 
+  final FieldService _fieldService = FieldService();
+  final ImagePicker _imagePicker = ImagePicker();
+  List<File> selectedImages = [];
+
+  /// Pick multiple images
+  Future<void> _pickImages() async {
+    try {
+      final List<XFile>? images = await _imagePicker.pickMultiImage();
+
+      if (images != null && images.isNotEmpty) {
+        setState(() {
+          selectedImages = images.map((e) => File(e.path)).toList();
+        });
+        _logger.d("Images selected: ${selectedImages.map((e) => e.path)}");
+      } else {
+        _logger.w("No images were selected.");
+      }
+    } catch (e) {
+      _logger.e("Error picking images: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error picking images: $e")),
+      );
+    }
+  }
+
+ 
   Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate() &&
-        selectedCourtSize != null &&
-        selectedImages.length == 3) {
+    if (_formKey.currentState!.validate() && selectedCourtSize != null) {
       setState(() => isLoading = true);
 
       try {
         final userId = await AuthService().getUserId();
         if (userId == null) throw Exception("User not authenticated.");
 
-        // Upload images to Cloud Storage
-        final cardImageUrl = await _cloudStorageService.uploadImage(
-          selectedImages[0],
-          "futsal_images/card_${DateTime.now()}",
-        );
-        final carouselImageUrl1 = await _cloudStorageService.uploadImage(
-          selectedImages[1],
-          "futsal_images/carousel1_${DateTime.now()}",
-          
-        );
-        final carouselImageUrl2 = await _cloudStorageService.uploadImage(
-          selectedImages[2],
-          "futsal_images/carousel2_${DateTime.now()}",
-        );
-
-        final newFutsal = FieldModel(
-          id: '',
-          email: '',
+        await _fieldService.addFutsal(
           name: nameController.text,
+          email: emailController.text,
           location: locationController.text,
           hourlyPrice: hourlyPriceController.text,
           monthlyPrice: monthlyPriceController.text,
-          courtSize: selectedCourtSize!,
           contact: contactController.text,
-          cardImg: cardImageUrl,
-          img1: carouselImageUrl1,
-          img2: carouselImageUrl2,
+          courtSize: selectedCourtSize!,
           userId: userId,
+          cardImg: addfutsalcardimgUrl,
+          img1: addfutsalImg1Url,
+          img2: addFutsalImg2Url,
         );
 
-        await context.read<FieldCubit>().addField(newFutsal);
-
+        _logger.i("Futsal added successfully!");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Futsal Court Added Successfully!')),
         );
         Navigator.pop(context);
       } catch (e) {
+        _logger.e("Error adding futsal: $e");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
         );
@@ -84,19 +90,11 @@ class _AddFutsalState extends State<AddFutsal> {
         setState(() => isLoading = false);
       }
     } else {
+      _logger.w("Form validation failed or court size not selected.");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('Please fill all fields and select 3 images!')),
+        const SnackBar(content: Text('Please fill all fields!')),
       );
     }
-  }
-
-  Future<void> _pickImages() async {
-    final images = await _imagePickerService.pickMultipleImages(3);
-    setState(() {
-      selectedImages = images.map((e) => File(e.path)).toList();
-    });
   }
 
   @override
@@ -104,9 +102,8 @@ class _AddFutsalState extends State<AddFutsal> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add Futsal Court"),
-        centerTitle: true,
         backgroundColor: Colors.teal,
-        elevation: 0,
+        centerTitle: true,
       ),
       body: Stack(
         children: [
@@ -116,9 +113,9 @@ class _AddFutsalState extends State<AddFutsal> {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildTextField(nameController, "Futsal Name"),
+                    _buildTextField(emailController, "Email"),
                     _buildTextField(locationController, "Location"),
                     _buildTextField(hourlyPriceController, "Hourly Price",
                         isNumeric: true),
@@ -127,7 +124,7 @@ class _AddFutsalState extends State<AddFutsal> {
                     _buildTextField(contactController, "Contact",
                         isNumeric: true),
                     _buildCourtSizeDropdown(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     _buildImagePickerSection(),
                     const SizedBox(height: 20),
                     _buildSubmitButton(),
@@ -155,14 +152,14 @@ class _AddFutsalState extends State<AddFutsal> {
         keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(
           labelText: label,
-          filled: true,
-          fillColor: Colors.grey.shade50,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        validator: (value) =>
-            value == null || value.isEmpty ? "Enter $label" : null,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return "Please enter $label";
+          }
+          return null;
+        },
       ),
     );
   }
@@ -171,8 +168,6 @@ class _AddFutsalState extends State<AddFutsal> {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: "Court Size",
-        filled: true,
-        fillColor: Colors.grey.shade50,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       value: selectedCourtSize,
@@ -180,6 +175,7 @@ class _AddFutsalState extends State<AddFutsal> {
           .map((size) => DropdownMenuItem(value: size, child: Text(size)))
           .toList(),
       onChanged: (value) => setState(() => selectedCourtSize = value),
+      validator: (value) => value == null ? "Please select a court size" : null,
     );
   }
 
@@ -188,7 +184,7 @@ class _AddFutsalState extends State<AddFutsal> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Pick 3 Images",
+          "Pick Images",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
@@ -203,18 +199,18 @@ class _AddFutsalState extends State<AddFutsal> {
                   color: Colors.teal.shade50,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
-                  Icons.add_a_photo,
-                  size: 40,
-                  color: Colors.teal,
-                ),
+                child:
+                    const Icon(Icons.add_a_photo, size: 40, color: Colors.teal),
               ),
             ),
             const SizedBox(width: 12),
-            Wrap(
-              spacing: 10,
-              children: selectedImages
-                  .map((image) => ClipRRect(
+            Expanded(
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: selectedImages
+                    .map(
+                      (image) => ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.file(
                           image,
@@ -222,8 +218,10 @@ class _AddFutsalState extends State<AddFutsal> {
                           width: 80,
                           fit: BoxFit.cover,
                         ),
-                      ))
-                  .toList(),
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
           ],
         ),
@@ -232,16 +230,20 @@ class _AddFutsalState extends State<AddFutsal> {
   }
 
   Widget _buildSubmitButton() {
-    return ElevatedButton(
-      onPressed: _submitForm,
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        backgroundColor: Colors.teal,
-      ),
-      child: const Text(
-        "Add Futsal Court",
-        style: TextStyle(fontSize: 18, color: Colors.white),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _submitForm,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.teal,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        child: const Text(
+          "Add Futsal Court",
+          style: TextStyle(fontSize: 18, color: Colors.white),
+        ),
       ),
     );
   }

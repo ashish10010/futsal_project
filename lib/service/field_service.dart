@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:logger/logger.dart';
 
 import '../src/core/constants/string.dart';
 import '../src/features/futsal/data/models/field_model.dart';
 
+final client = http.Client();
+
 class FieldService {
+  final Logger _logger = Logger();
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -14,7 +18,7 @@ class FieldService {
   }
 
   Future<String?> getUserId() async {
-    return await _storage.read(key: 'userId'); 
+    return await _storage.read(key: 'userId');
   }
 
   // Fetch all futsal fields
@@ -66,30 +70,62 @@ class FieldService {
   }
 
   // Add a new futsal field (For Owner)
-  Future<void> addFutsal(FieldModel field) async {
+  Future<void> addFutsal({
+    required String name,
+    required String email,
+    required String location,
+    required String hourlyPrice,
+    required String monthlyPrice,
+    required String contact,
+    required String courtSize,
+    required String userId,
+    required String cardImg,
+    required String img1,
+    required String img2,
+  }) async {
     final token = await _getToken();
-    final userId = await getUserId(); 
-    if (token == null || userId == null) {
-      throw Exception('User not authenticated or userId missing.');
-    }
+    _logger.d("Starting addFutsal request...");
 
     final url = Uri.parse('${AppString.baseUrl}/futsal/add-futsal');
-    final response = await http.post(
+
+    final body = jsonEncode({
+      "name": name,
+      "email": email,
+      "location": location,
+      "hourlyPrice": hourlyPrice,
+      "monthlyPrice": monthlyPrice,
+      "contact": contact,
+      "courtSize": courtSize,
+      "userId": userId,
+      "cardImg": cardImg,
+      "img1": img1,
+      "img2": img2,
+    });
+
+    _logger.i("Request Body: $body");
+
+    final response = await client.post(
       url,
-      body: json.encode({...field.toMap(), 'userId': userId}),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
+      body: body,
     );
+
+    _logger.d("Response Status: ${response.statusCode}");
+    _logger.d("Response Body: ${response.body}");
 
     if (response.statusCode != 201) {
       throw Exception('Failed to add futsal: ${response.body}');
     }
+
+    _logger.i("Futsal successfully added!");
   }
 
   // Update a futsal field by ID
-  Future<void> updateFutsalById(String futsalId, FieldModel updatedField) async {
+  Future<void> updateFutsalById(
+      String futsalId, FieldModel updatedField) async {
     final token = await _getToken();
     if (token == null) {
       throw Exception('No token found. User not authenticated.');

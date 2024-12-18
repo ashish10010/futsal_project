@@ -1,38 +1,34 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' as http;
 
 class CloudStorageService {
-  final String bucketName = "quicksal-da7b9.appspot.com"; // Replace with your bucket name
-  final String baseUrl = "https://firebasestorage.googleapis.com/v0/b/";
+  final String bucketName = "quicksal-da7b9.appspot.com"; // Correct bucket name
+  final String baseUrl = "https://firebasestorage.googleapis.com/v0/b";
 
   /// Upload an image to Firebase Storage and return the download URL
   Future<String> uploadImage(File file, String filePath) async {
     try {
-      // Firebase endpoint for uploading files
-      final uri = Uri.parse('$baseUrl$bucketName/o?name=$filePath');
-
-      // Create a multipart request
+      final uri = Uri.parse("$baseUrl/$bucketName/o?name=$filePath");
       final request = http.MultipartRequest("POST", uri);
 
-      // Attach file to the request
+      // Attach the image file
       request.files.add(await http.MultipartFile.fromPath(
-        'file', // Field name expected by Firebase
+        'file',
         file.path,
+        contentType: http.MediaType('image', 'jpeg'), // Ensure correct content type
       ));
 
-      // Send the request
       final response = await request.send();
 
-      // Check the response status
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseBody = await response.stream.bytesToString();
         final jsonResponse = jsonDecode(responseBody);
 
-        // Build the public download URL
+        // Generate download URL
         final downloadUrl =
-            "https://firebasestorage.googleapis.com/v0/b/$bucketName/o/${Uri.encodeComponent(filePath)}?alt=media";
-        
+            "https://firebasestorage.googleapis.com/v0/b/$bucketName/o/${Uri.encodeComponent(filePath)}?alt=media&token=${jsonResponse['downloadTokens']}";
         return downloadUrl;
       } else {
         throw Exception('Failed to upload image: ${response.reasonPhrase}');
