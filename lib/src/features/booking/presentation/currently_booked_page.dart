@@ -7,6 +7,30 @@ import 'package:futsal_booking_app/src/features/booking/data/booking_model.dart'
 class CurrentlyBookedPage extends StatelessWidget {
   const CurrentlyBookedPage({super.key});
 
+  
+  String _formatDate(String dateTime) {
+    final parsedDate = DateTime.parse(dateTime);
+    return "${parsedDate.year}-${_padZero(parsedDate.month)}-${_padZero(parsedDate.day)}";
+  }
+
+ 
+  String _generateSlot(String dateTime) {
+    final parsedTime = DateTime.parse(dateTime);
+    final startHour = parsedTime.hour;
+    final endHour = startHour + 1;
+
+    String formatHour(int hour) {
+      final period = hour < 12 ? 'AM' : 'PM';
+      final hour12 = hour % 12 == 0 ? 12 : hour % 12; 
+      return "$hour12 $period";
+    }
+
+    return "${formatHour(startHour)} - ${formatHour(endHour)}";
+  }
+
+  
+  String _padZero(int value) => value < 10 ? '0$value' : '$value';
+
   void _cancelBooking(BuildContext context, BookingModel booking) {
     showDialog(
       context: context,
@@ -71,9 +95,7 @@ class CurrentlyBookedPage extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          context
-                              .read<BookingCubit>()
-                              .deleteBooking(booking.id);
+                          context.read<BookingCubit>().deleteBooking(booking.id);
                           Navigator.of(context).pop();
                         },
                         style: ElevatedButton.styleFrom(
@@ -159,14 +181,13 @@ class CurrentlyBookedPage extends StatelessWidget {
                             child: CachedNetworkImage(
                               imageUrl: field.cardImg,
                               fit: BoxFit.cover,
-                              placeholder: (context, url) => const Center(
-                                  child: CircularProgressIndicator()),
+                              placeholder: (context, url) =>
+                                  const Center(child: CircularProgressIndicator()),
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
                             ),
                           ),
                         ),
-
                         Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -190,7 +211,7 @@ class CurrentlyBookedPage extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                "Date: ${booking.date}",
+                                "Date: ${_formatDate(booking.date)}",
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey,
@@ -198,7 +219,15 @@ class CurrentlyBookedPage extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                "Time: ${booking.packageType}",
+                                "Slot: ${_generateSlot(booking.date)}",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "Package: ${booking.packageType}",
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey,
@@ -207,8 +236,6 @@ class CurrentlyBookedPage extends StatelessWidget {
                             ],
                           ),
                         ),
-
-                        // Footer with Price and Cancel Button
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16.0,
@@ -226,8 +253,7 @@ class CurrentlyBookedPage extends StatelessWidget {
                                 ),
                               ),
                               ElevatedButton(
-                                onPressed: () =>
-                                    _cancelBooking(context, booking),
+                                onPressed: () => _cancelBooking(context, booking),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
                                   shape: RoundedRectangleBorder(
