@@ -53,11 +53,13 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
       final occupiedDateTime = DateTime.parse(occupied.date);
       if (occupied.packageType.toLowerCase() == 'hourly' &&
           slot.day == occupiedDateTime.day &&
-          slot.hour == occupiedDateTime.hour) {
+          slot.hour == occupiedDateTime.hour &&
+          (widget.field.id == occupied.id)) {
         return true;
       } else if (occupied.packageType.toLowerCase() == 'monthly' &&
           slot.month == occupiedDateTime.month &&
-          slot.hour == occupiedDateTime.hour) {
+          slot.hour == occupiedDateTime.hour &&
+          (widget.field.id == occupied.id)) {
         return true;
       }
     }
