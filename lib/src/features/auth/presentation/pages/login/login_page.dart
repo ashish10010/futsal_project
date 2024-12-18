@@ -28,113 +28,122 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        elevation: 4,
+        backgroundColor: Colors.green, // Adjust color as needed
         centerTitle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Sign In',
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Log In',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 30),
-              CustomTextField(
-                controller: emailController,
-                hintText: 'Email',
-                leadingIcon: Icons.email,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Email is required';
-                  } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    return 'Enter a valid email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: passwordController,
-                hintText: 'Password',
-                leadingIcon: Icons.lock,
-                isPassword: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Password is required';
-                  } else if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24),
-              BlocConsumer<AuthCubit, AuthState>(
-                listener: (context, state) {
-                  if (state is AuthLoggedIn) {
-                    final role = state.user.role;
-                    if (role == 'user') {
-                      Navigator.pushReplacementNamed(context, '/mainpage');
-                    } else if (role == 'owner') {
-                      Navigator.pushReplacementNamed(context, '/ownerDashboard');
-                    } else if (role == 'admin') {
-                      Navigator.pushReplacementNamed(context, '/adminPanel');
+                const SizedBox(height: 30),
+                CustomTextField(
+                  controller: emailController,
+                  hintText: 'Email',
+                  leadingIcon: Icons.email,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Email is required';
+                    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                        .hasMatch(value)) {
+                      return 'Enter a valid email';
                     }
-                  } else if (state is AuthError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.error)),
-                    );
-                  }
-                },
-                builder: (context, state) {
-                  if (state is AuthLoading) {
-                    return const CircularProgressIndicator();
-                  }
-                  return AuthGradientButton(
-                    buttonText: 'Log In',
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        context.read<AuthCubit>().signIn(
-                              email: emailController.text.trim(),
-                              password: passwordController.text.trim(),
-                            );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please fix the errors')),
-                        );
-                      }
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-              RichText(
-                text: TextSpan(
-                  text: "Don't have an account? ",
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  children: [
-                    TextSpan(
-                      text: 'Sign Up.',
-                      style: const TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.pushNamed(context, '/signup');
-                        },
-                    ),
-                  ],
+                    return null;
+                  },
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                CustomTextField(
+                  controller: passwordController,
+                  hintText: 'Password',
+                  leadingIcon: Icons.lock,
+                  isPassword: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password is required';
+                    } else if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24),
+                BlocConsumer<AuthCubit, AuthState>(
+                  listener: (context, state) {
+                    if (state is AuthLoggedIn) {
+                      final role = state.user.role;
+                      if (role == 'user') {
+                        Navigator.pushReplacementNamed(context, '/mainpage');
+                      } else if (role == 'owner') {
+                        Navigator.pushReplacementNamed(
+                            context, '/ownerDashboard');
+                      } else if (role == 'admin') {
+                        Navigator.pushReplacementNamed(context, '/adminPanel');
+                      }
+                    } else if (state is AuthError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.error)),
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is AuthLoading) {
+                      return const CircularProgressIndicator();
+                    }
+                    return AuthGradientButton(
+                      buttonText: 'Log In',
+                      onTap: () {
+                        if (_formKey.currentState!.validate()) {
+                          context.read<AuthCubit>().signIn(
+                                email: emailController.text.trim(),
+                                password: passwordController.text.trim(),
+                              );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Please fix the errors')),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                RichText(
+                  text: TextSpan(
+                    text: "Don't have an account? ",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    children: [
+                      TextSpan(
+                        text: 'Sign Up.',
+                        style: const TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.pushNamed(context, '/signup');
+                          },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

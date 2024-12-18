@@ -13,12 +13,12 @@ class DetailPage extends StatelessWidget {
     required this.field,
   });
 
-  
   static final Map<String, LatLng> coordinatesMap = {
     "ABC Futsal": const LatLng(28.235454, 83.989304),
     "Chin Futsal": const LatLng(28.251275, 83.985669),
     "Tutisal Arena": const LatLng(28.335721, 83.986700),
-    "Khelkunj Arena Swimming Pool and Futsal": const LatLng(28.211924, 84.014808),
+    "Khelkunj Arena Swimming Pool and Futsal":
+        const LatLng(28.211924, 84.014808),
     "Ranipauwa Sports Center": const LatLng(28.220292, 83.998779),
   };
 
@@ -28,14 +28,21 @@ class DetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 4,
+        backgroundColor: Palette.primaryGreen,
+        centerTitle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
         title: Text(
           field.name,
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
+            color: Colors.white,
+            letterSpacing: 1,
           ),
         ),
-        backgroundColor: Palette.primaryGreen,
       ),
       body: SingleChildScrollView(
         child: Padding(

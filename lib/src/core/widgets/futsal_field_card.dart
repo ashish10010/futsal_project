@@ -9,22 +9,22 @@ class FutsalFieldCard extends StatelessWidget {
     required this.fields,
   });
 
-  Widget _buildRating() {
-    final fullStars = double.parse(fields.hourlyPrice).floor() % 5;
-    final emptyStars = 5 - fullStars;
+  // Widget _buildRating() {
+  //   final fullStars = double.parse(fields.hourlyPrice).floor() % 5;
+  //   final emptyStars = 5 - fullStars;
 
-    return Row(
-      children: List.generate(
-            fullStars,
-            (index) => const Icon(Icons.star, color: Colors.orange, size: 16),
-          ) +
-          List.generate(
-            emptyStars,
-            (index) =>
-                const Icon(Icons.star_border, color: Colors.orange, size: 16),
-          ),
-    );
-  }
+  //   return Row(
+  //     children: List.generate(
+  //           fullStars,
+  //           (index) => const Icon(Icons.star, color: Colors.orange, size: 16),
+  //         ) +
+  //         List.generate(
+  //           emptyStars,
+  //           (index) =>
+  //               const Icon(Icons.star_border, color: Colors.orange, size: 16),
+  //         ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -94,13 +94,13 @@ class FutsalFieldCard extends StatelessWidget {
                     Text(
                       fields.location,
                       style: textTheme.bodySmall?.copyWith(
-                        color: Colors.grey,
-                      ),
+                          // color: Colors.grey,
+                          ),
                     ),
                     const SizedBox(height: 8),
                     // Ratings
-                    _buildRating(),
-                    const SizedBox(height: 8),
+                    // _buildRating(),
+                    // const SizedBox(height: 8),
                     // Price
                     Text(
                       'Hourly: Rs. ${fields.hourlyPrice}',

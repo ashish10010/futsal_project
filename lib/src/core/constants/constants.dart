@@ -3,12 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 /// Primary Color Palette for the Green Theme
 class Palette {
-  static const Color primaryGreen = Color(0xFF2ECC71); // Light green
+  static const Color primaryGreen = Colors.green; // Light green
   static const Color darkGreen = Color(0xFF27AE60); // Dark green
   static const Color lightGreen = Color(0xFFD4EFDF); // Subtle background green
-  static const Color backgroundColor = Color(0xFFF3F4F6); // Soft white background
+  static const Color backgroundColor =
+      Color(0xFFF3F4F6); // Soft white background
   static const Color white = Colors.white; // Pure white
-  static const Color grey = Color(0xFFB0BEC5); // Neutral grey
+  static const Color grey = Color.fromARGB(255, 116, 120, 121); // Neutral grey
   static const Color error = Colors.redAccent;
   static const Color black = Colors.black87; // Error red
   static const Color transparent = Colors.transparent; // Transparent
@@ -34,7 +35,7 @@ TextStyle bodyTextStyle = GoogleFonts.poppins(
 
 TextStyle whiteTextStyle = GoogleFonts.poppins(
   fontSize: 14,
-  color: Palette.grey,
+  color: Palette.black,
 );
 
 TextStyle greenTextStyle = GoogleFonts.poppins(

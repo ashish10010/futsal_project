@@ -8,19 +8,20 @@ class FaqsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 4,
+        backgroundColor: Colors.green,
+        centerTitle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
         title: const Text(
           "FAQs",
           style: TextStyle(
-            color: Colors.white,
             fontSize: 22,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            letterSpacing: 1,
           ),
-        ),
-        backgroundColor: Colors.green,
-        centerTitle: true,
-        elevation: 4,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: const FaqsContent(),
@@ -64,7 +65,7 @@ class _FaqsContentState extends State<FaqsContent> {
     FaqItem(
       question: "How do I contact customer support?",
       answer:
-          "You can contact our support team via the 'About Us' page or email us at support@futsalbookingapp.com. We are also available on phone during working hours.",
+          "You can contact our support team via the 'About Us' page or email us at support@quicksal.com. We are also available on phone during working hours.",
     ),
     FaqItem(
       question: "What happens if I arrive late for my booked slot?",

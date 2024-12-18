@@ -8,19 +8,20 @@ class AboutUsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 4,
+        backgroundColor: Colors.green,
+        centerTitle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
         title: const Text(
           "About Us",
           style: TextStyle(
             color: Colors.white,
             fontSize: 22,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.bold, // Changed to bold for consistency
+            letterSpacing: 1, // Added letter spacing for a modern touch
           ),
-        ),
-        backgroundColor: Colors.green,
-        centerTitle: true,
-        elevation: 4,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: ListView(
@@ -56,7 +57,7 @@ class AboutUsPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            "Welcome to Futsal Booking App",
+            "Welcome to Quicksal A Futsal Booking App",
             style: GoogleFonts.poppins(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -106,7 +107,7 @@ class AboutUsPage extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            "At Futsal Booking App, we are passionate about simplifying the process of finding and reserving futsal slots. Our mission is to connect players with the best futsal venues, ensuring a seamless and enjoyable experience.",
+            "At Quicksal, we are passionate about simplifying the process of finding and reserving futsal slots. Our mission is to connect players with the best futsal venues, ensuring a seamless and enjoyable experience.",
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w400,
@@ -200,7 +201,7 @@ class AboutUsPage extends StatelessWidget {
               Icon(Icons.email, color: Colors.green, size: 24),
               SizedBox(width: 8),
               Text(
-                "support@futsalbookingapp.com",
+                "support@quicksal.com",
                 style: TextStyle(fontSize: 16, color: Colors.green),
               ),
             ],

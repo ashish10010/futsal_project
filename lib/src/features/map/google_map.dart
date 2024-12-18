@@ -224,8 +224,21 @@ class _NearbyFutsalMapState extends State<NearbyFutsalMap> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Nearby Futsal Fields"),
+        elevation: 4,
         backgroundColor: Colors.green,
+        centerTitle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
+        title: const Text(
+          "Nearby Futsal Fields",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            letterSpacing: 1,
+          ),
+        ),
       ),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(

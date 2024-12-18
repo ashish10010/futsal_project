@@ -16,8 +16,21 @@ class _AccountPageState extends State<AccountPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Account Settings', style: TextStyle(fontSize: 20)),
+        elevation: 4,
         backgroundColor: Colors.green,
+        centerTitle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
+        title: const Text(
+          "Account Settings",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            letterSpacing: 1,
+          ),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -32,7 +45,7 @@ class _AccountPageState extends State<AccountPage> {
           const SizedBox(height: 20),
 
           SettingsSection(
-            sectionTitle: "Account Management",
+            sectionTitle: "Account",
             items: [
               SettingsListTile(
                 title: "Logout",
@@ -44,7 +57,7 @@ class _AccountPageState extends State<AccountPage> {
             ],
           ),
           SettingsSection(
-            sectionTitle: "Booking Management",
+            sectionTitle: "Bookings",
             items: [
               SettingsListTile(
                 title: "My Bookings",

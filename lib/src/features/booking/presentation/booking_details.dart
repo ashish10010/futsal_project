@@ -14,7 +14,6 @@ class BookingDetailsPage extends StatelessWidget {
 
   //initiate Khalti Payment
   void _initiatePayment(BuildContext context, BookingCubit bookingCubit) {
-
     print('Proceed to Pay Button Clicked'); // Debugging
 
     KhaltiScope.of(context).pay(
@@ -97,13 +96,21 @@ class BookingDetailsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Booking Details",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
+        elevation: 4,
         backgroundColor: Palette.primaryGreen,
         centerTitle: true,
-        elevation: 0,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
+        title: const Text(
+          "Booking Details",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            letterSpacing: 1,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

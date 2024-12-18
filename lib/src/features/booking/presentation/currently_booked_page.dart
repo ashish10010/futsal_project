@@ -84,7 +84,7 @@ class CurrentlyBookedPage extends StatelessWidget {
                           ),
                         ),
                         child: const Text(
-                          "Cancel Booking",
+                          "Cancel",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -109,13 +109,18 @@ class CurrentlyBookedPage extends StatelessWidget {
       value: context.read<BookingCubit>()..fetchUserBookings(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "Currently Booked",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          elevation: 0,
           backgroundColor: Colors.green,
           centerTitle: true,
-          elevation: 0,
+          title: const Text(
+            "Currently Booked",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: 1,
+            ),
+          ),
         ),
         body: BlocBuilder<BookingCubit, BookingState>(
           builder: (context, state) {

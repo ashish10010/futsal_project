@@ -50,7 +50,8 @@ class _QuickSalState extends State<QuickSal> {
           child: MaterialApp(
             title: AppString.title,
             debugShowCheckedModeBanner: false,
-            navigatorKey: navigatorKey, // Pass the same navigatorKey to MaterialApp
+            navigatorKey:
+                navigatorKey, // Pass the same navigatorKey to MaterialApp
             themeMode: themeMode,
             theme: ThemeData(
               scaffoldBackgroundColor: Palette.backgroundColor,
