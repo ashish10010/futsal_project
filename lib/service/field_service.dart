@@ -13,7 +13,7 @@ class FieldService {
     return await _storage.read(key: 'token');
   }
 
-  Future<String?> _getUserId() async {
+  Future<String?> getUserId() async {
     return await _storage.read(key: 'userId'); 
   }
 
@@ -65,10 +65,10 @@ class FieldService {
     }
   }
 
-  // Add a new futsal field (For Admin/Owner)
+  // Add a new futsal field (For Owner)
   Future<void> addFutsal(FieldModel field) async {
     final token = await _getToken();
-    final userId = await _getUserId(); // Fetch the userId for the owner
+    final userId = await getUserId(); 
     if (token == null || userId == null) {
       throw Exception('User not authenticated or userId missing.');
     }

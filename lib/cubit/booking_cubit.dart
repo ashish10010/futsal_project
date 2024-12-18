@@ -13,8 +13,7 @@ class BookingCubit extends Cubit<BookingState> {
   /// Fetch all bookings for the current user
   Future<void> fetchUserBookings() async {
     print('FETCH BOOKING IS WORKING:::::::::::::::::::::');
-    print('FETCH BOOKING IS WORKING:::::::::::::::::::::');
-    print('FETCH BOOKING IS WORKING:::::::::::::::::::::');
+
 
     try {
       emit(BookingLoading());
@@ -25,10 +24,9 @@ class BookingCubit extends Cubit<BookingState> {
     }
   }
 
-  /// Fetch all bookings for a specific futsal field (e.g., for owners)
+  /// Fetch all bookings for a specific futsal field 
   Future<void> fetchBookingsByFutsal(String futsalId) async {
-
-         print('Fetch  BOOKING  By FutsalID IS WORKING:::::::::::::::::::::');
+         print('Fetch  BOOKING  BY FutsalID IS WORKING:::::::::::::::::::::');
 
     try {
       emit(BookingLoading());

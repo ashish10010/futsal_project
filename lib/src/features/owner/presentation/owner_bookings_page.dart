@@ -10,6 +10,29 @@ class OwnerBookingsPage extends StatelessWidget {
     required this.futsalId,
   });
 
+  // Function to format Date: Extract only 'YYYY-MM-DD'
+  String _formatDate(String dateTime) {
+    final parsedDate = DateTime.parse(dateTime);
+    return "${parsedDate.year}-${_padZero(parsedDate.month)}-${_padZero(parsedDate.day)}";
+  }
+
+  // Generate slot time
+  String _generateSlot(String dateTime) {
+    final parsedTime = DateTime.parse(dateTime);
+    final startHour = parsedTime.hour;
+    final endHour = startHour + 1;
+
+    String formatHour(int hour) {
+      final period = hour < 12 ? 'AM' : 'PM';
+      final hour12 = hour % 12 == 0 ? 12 : hour % 12;
+      return "$hour12:00 $period";
+    }
+
+    return "${formatHour(startHour)} - ${formatHour(endHour)}";
+  }
+
+  String _padZero(int value) => value < 10 ? '0$value' : '$value';
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -18,11 +41,25 @@ class OwnerBookingsPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text(
             "View Bookings",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
-          backgroundColor: Colors.green,
           centerTitle: true,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF00BFA5), Color(0xFF00E676)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          elevation: 0,
         ),
+        backgroundColor: Colors.grey.shade100,
         body: BlocBuilder<BookingCubit, BookingState>(
           builder: (context, state) {
             if (state is BookingLoading) {
@@ -40,95 +77,87 @@ class OwnerBookingsPage extends StatelessWidget {
               }
 
               return ListView.builder(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(12.0),
                 itemCount: bookings.length,
                 itemBuilder: (context, index) {
                   final booking = bookings[index];
-                  final user = booking.userId;
-
-                  return Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white,
+                          Colors.grey.shade50,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                    margin: const EdgeInsets.only(bottom: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Booking Info Section
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "Booked By: ${user ?? "Unknown User"}",
+                                booking.futsalid[0].name,
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  color: Colors.teal,
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                "Package: ${booking.packageType}",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                              Text(
-                                "Date: ${booking.date}",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                              Text(
-                                "Price: Rs. ${booking.amount}",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                ),
+                              const Icon(
+                                Icons.sports_soccer,
+                                color: Colors.teal,
+                                size: 24,
                               ),
                             ],
                           ),
-                        ),
-                        // Footer - Cancel Button
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                            vertical: 12.0,
+                          const Divider(),
+                          _buildDetailRow(
+                            icon: Icons.calendar_today,
+                            label: "Date",
+                            value: _formatDate(booking.date),
                           ),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              context
-                                  .read<BookingCubit>()
-                                  .deleteBooking(booking.id);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: const Text(
-                              "Cancel Booking",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
+                          _buildDetailRow(
+                            icon: Icons.access_time,
+                            label: "Slot",
+                            value: _generateSlot(booking.date),
                           ),
-                        ),
-                      ],
+                          _buildDetailRow(
+                            icon: Icons.attach_money,
+                            label: "Price",
+                            value: "Rs. ${booking.amount}",
+                          ),
+                          _buildDetailRow(
+                            icon: Icons.category,
+                            label: "Package",
+                            value: booking.packageType,
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
               );
             } else if (state is BookingFailure) {
               return Center(
-                child: Text('Error: ${state.error}'),
+                child: Text(
+                  'Error: ${state.error}',
+                  style: const TextStyle(color: Colors.red),
+                ),
               );
             } else {
               return const Center(
@@ -137,6 +166,42 @@ class OwnerBookingsPage extends StatelessWidget {
             }
           },
         ),
+      ),
+    );
+  }
+
+  // Helper Widget to build booking details with an icon
+  Widget _buildDetailRow({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.teal, size: 20),
+          const SizedBox(width: 8),
+          Text(
+            "$label: ",
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: Colors.black54,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Colors.black87,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }

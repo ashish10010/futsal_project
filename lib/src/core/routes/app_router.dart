@@ -3,6 +3,7 @@ import 'package:futsal_booking_app/src/features/account/presentation/aboutUs.dar
 import 'package:futsal_booking_app/src/features/account/presentation/faqs.dart';
 import 'package:futsal_booking_app/src/features/booking/presentation/booking_details.dart';
 import 'package:futsal_booking_app/src/features/booking/presentation/currently_booked_page.dart';
+import 'package:futsal_booking_app/src/features/owner/presentation/add_futsal.dart';
 import 'package:futsal_booking_app/src/features/owner/presentation/owner_main_page.dart';
 import '../../features/admin/presentation/admin_panel.dart';
 import '../../features/auth/presentation/pages/login/login_page.dart';
@@ -61,6 +62,8 @@ class AppRouter {
       case '/ownerDashboard':
         return MaterialPageRoute(
             builder: (_) => const OwnerMainPage());
+      case '/addFutsal':
+        return MaterialPageRoute(builder: (_) => const AddFutsal());
       case '/faqs':
         return MaterialPageRoute(builder: (_) => const FaqsPage());
       case '/aboutUs':

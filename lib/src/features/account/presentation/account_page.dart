@@ -26,7 +26,7 @@ class _AccountPageState extends State<AccountPage> {
             name: user.name,
             email: user.email,
             avatarAsset:
-                'assets/images/defaultPic.jpg', // Replace with your actual asset path
+                'assets/images/defaultPic.jpg', 
           ),
 
           const SizedBox(height: 20),

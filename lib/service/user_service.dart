@@ -81,7 +81,7 @@ class UserService {
   Future<void> saveUser(UserModel user) async {
     final token = await _getToken();
     final url =
-        Uri.parse('${AppString.baseUrl}/users/create'); // Adjusted to an admin endpoint
+        Uri.parse('${AppString.baseUrl}/users/create'); 
 
     final response = await http.post(
       url,

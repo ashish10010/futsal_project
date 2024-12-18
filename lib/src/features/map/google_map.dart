@@ -16,10 +16,10 @@ class NearbyFutsalMap extends StatefulWidget {
 class _NearbyFutsalMapState extends State<NearbyFutsalMap> {
   late GoogleMapController _mapController;
   LatLng _currentLocation =
-      const LatLng(28.2096, 83.9856); // Default to Pokhara
+      const LatLng(28.2096, 83.9856); 
   final Set<Marker> _markers = {};
   Polyline? _routePolyline;
-  final String _apiKey = AppString.googleApiKey; // Replace with your API Key
+  final String _apiKey = AppString.googleApiKey; 
   List<FutsalField> _futsalFields = [];
   bool _isLocationFetched = false;
 

@@ -67,7 +67,7 @@ class BookingService {
       queryParameters['futsalid'] = futsalId;
     }
 
-    queryParameters['userId'] = userId;
+    queryParameters['userid'] = userId;
   
     final response = await http.get(
       Uri.parse('${AppString.baseUrl}/booking/all-booking').replace(

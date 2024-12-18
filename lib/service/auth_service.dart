@@ -83,5 +83,5 @@ class AuthService {
   }
 
   Future<String?> getToken() => _getToken();
-  Future<String?> getUserId() => _getUserId();
+   Future<String?> getUserId() => _getUserId();
 }

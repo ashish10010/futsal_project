@@ -9,6 +9,7 @@ part 'field_state.dart';
 class FieldCubit extends Cubit<FieldState> {
   final FieldService fieldService;
 
+
   FieldCubit(this.fieldService) : super(FieldInitial());
 
   // Fetch all fields
@@ -23,12 +24,13 @@ class FieldCubit extends Cubit<FieldState> {
   }
 
 //fetch field by id
-    FieldModel getFieldById(String futsalId) {
+  FieldModel getFieldById(String futsalId) {
     if (state is FieldSuccess) {
       final fields = (state as FieldSuccess).fields;
       return fields.firstWhere(
         (field) => field.id == futsalId,
-        orElse: () => FieldModel.empty(), // Provide a fallback in case ID is not found
+        orElse: () =>
+            FieldModel.empty(), // Provide a fallback in case ID is not found
       );
     } else {
       throw Exception('Fields are not loaded yet.');
@@ -36,15 +38,22 @@ class FieldCubit extends Cubit<FieldState> {
   }
 
   // Fetch fields added by the logged-in owner
-  // Future<void> fetchFieldsByOwner() async {
-  //   try {
-  //     emit(FieldLoading());
-  //     final fields = await fieldService.fetchAllFields(); // Assuming all fields are fetched and filtered by `userId`
-  //     emit(FieldSuccess(fields.where((field) => field.userId == 'YOUR_USER_ID').toList()));
-  //   } catch (e) {
-  //     emit(FieldFailure(e.toString()));
-  //   }
-  // }
+  Future<void> fetchFieldsByOwner() async {
+    try {
+      emit(FieldLoading());
+          final userId = await fieldService.getUserId(); 
+      if (userId != null) {
+        final fields = await fieldService.fetchAllFields();
+        final ownerFields =
+            fields.where((field) => field.userId == userId).toList();
+        emit(FieldSuccess(ownerFields));
+      } else {
+        throw Exception("User ID not found.");
+      }
+    } catch (e) {
+      emit(FieldFailure(e.toString()));
+    }
+  }
 
   // Add a new field
   Future<void> addField(FieldModel field) async {
