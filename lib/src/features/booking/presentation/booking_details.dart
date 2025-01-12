@@ -15,8 +15,6 @@ class BookingDetailsPage extends StatelessWidget {
   //initiate Khalti Payment
   void _initiatePayment(BuildContext context, BookingCubit bookingCubit) {
 
-    print('Proceed to Pay Button Clicked'); // Debugging
-
     KhaltiScope.of(context).pay(
       config: PaymentConfig(
         amount: 1000, // Amount in paisa
@@ -27,8 +25,8 @@ class BookingDetailsPage extends StatelessWidget {
         PaymentPreference.khalti,
       ],
       onSuccess: (PaymentSuccessModel success) async {
-        // On Payment Success
-        Navigator.pop(context); // Close loading dialog
+        // // On Payment Success
+        // Navigator.pop(context); // Close loading dialog
         await _confirmBooking(context, bookingCubit);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

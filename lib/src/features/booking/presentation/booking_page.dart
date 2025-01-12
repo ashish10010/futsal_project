@@ -44,27 +44,28 @@ class _ScheduleSlotsPageState extends State<ScheduleSlotsPage> {
     context.read<BookingCubit>().fetchBookingsByFutsal(widget.field.id);
   }
 
-  /// Checks if a specific time slot is booked
-  bool isSlotOccupied({
-    required DateTime slot,
-    required List<BookingModel> occupiedSlots,
-  }) {
-    for (var occupied in occupiedSlots) {
-      final occupiedDateTime = DateTime.parse(occupied.date);
-      if (occupied.packageType.toLowerCase() == 'hourly' &&
-          slot.day == occupiedDateTime.day &&
-          slot.hour == occupiedDateTime.hour &&
-          (widget.field.id == occupied.id)) {
-        return true;
-      } else if (occupied.packageType.toLowerCase() == 'monthly' &&
-          slot.month == occupiedDateTime.month &&
-          slot.hour == occupiedDateTime.hour &&
-          (widget.field.id == occupied.id)) {
-        return true;
-      }
+ 
+bool isSlotOccupied({
+  required DateTime slot,
+  required List<BookingModel> occupiedSlots,
+}) {
+  for (var occupied in occupiedSlots) {
+    final occupiedDateTime = DateTime.parse(occupied.date);
+    if (occupied.packageType.toLowerCase() == 'hourly' &&
+        slot.day == occupiedDateTime.day &&
+        slot.hour == occupiedDateTime.hour &&
+        widget.field.id == occupied.futsalid[0].id) { 
+      return true;
+    } else if (occupied.packageType.toLowerCase() == 'monthly' &&
+        slot.month == occupiedDateTime.month &&
+        slot.hour == occupiedDateTime.hour &&
+        widget.field.id == occupied.futsalid[0].id) {
+      return true;
     }
-    return false;
   }
+  return false;
+}
+
 
   void _navigateToBookingDetails(
     BuildContext context,

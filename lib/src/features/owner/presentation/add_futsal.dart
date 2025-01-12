@@ -35,9 +35,9 @@ class _AddFutsalState extends State<AddFutsal> {
   /// Pick multiple images
   Future<void> _pickImages() async {
     try {
-      final List<XFile>? images = await _imagePicker.pickMultiImage();
+      final List<XFile> images = await _imagePicker.pickMultiImage();
 
-      if (images != null && images.isNotEmpty) {
+      if (images.isNotEmpty) {
         setState(() {
           selectedImages = images.map((e) => File(e.path)).toList();
         });
