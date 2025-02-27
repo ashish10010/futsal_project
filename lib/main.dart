@@ -34,8 +34,8 @@ class _QuickSalState extends State<QuickSal> {
   Widget build(BuildContext context) {
     final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
     return KhaltiScope(
-      publicKey: "test_public_key_d5d9f63743584dc38753056b0cc737d5", // key
-      navigatorKey: navigatorKey, // Pass the navigator key here
+      publicKey: "test_public_key_d5d9f63743584dc38753056b0cc737d5", 
+      navigatorKey: navigatorKey,
       builder: (context, _) {
         return MultiBlocProvider(
           providers: [
@@ -50,7 +50,7 @@ class _QuickSalState extends State<QuickSal> {
           child: MaterialApp(
             title: AppString.title,
             debugShowCheckedModeBanner: false,
-            navigatorKey: navigatorKey, // Pass the same navigatorKey to MaterialApp
+            navigatorKey: navigatorKey, 
             themeMode: themeMode,
             theme: ThemeData(
               scaffoldBackgroundColor: Palette.backgroundColor,
